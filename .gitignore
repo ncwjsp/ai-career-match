@@ -1,0 +1,35 @@
+# Secrets and local state
+.env
+.env.*
+!.env.example
+!.env.*.example
+**/node_modules/
+**/.next/
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+**/*.pyc
+**/*.tsbuildinfo
+.cache/
+.tmp/
+.review/
+artifacts/
+coverage/
+**/.coverage
+**/htmlcov/
+**/playwright-report/
+**/test-results/
+# Private documents, corpora and model weights
+data/private/
+data/raw/
+uploads/
+*.pt
+*.pth
+*.safetensors
+*.onnx
+.DS_Store
+Thumbs.db
+
+**/next-env.d.ts
+**/.pnpm-store/
