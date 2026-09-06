@@ -1,10 +1,10 @@
 # AI Career Match - Project Plan
 
-**Last updated:** 2026-09-05
+**Last updated:** 2026-09-07
 
 **Team:** 3 members
 
-**Current milestone:** SET-01 shell prepared locally; review, database verification and publication pending.
+**Current milestone:** SET-01 and initial SET-02 implemented locally; local database verification passed; review/commit and publication pending.
 
 **Document maintainer:** Plai (M1) during initial bootstrap; M3 after the bootstrap handoff.
 
@@ -20,7 +20,7 @@ This plan is based on all 10 slides, their speaker notes, and all 5 pages of the
 
 - **Presentation:** `AI_Career_Match_Presentation.pptx`, supplied at `C:/Users/User/Downloads/AI_Career_Match_Presentation.pptx`.
 - **Script:** `new.pdf`, supplied at `C:/Users/User/Downloads/new.pdf`. This is the full speaker script, including the research comparison and likely questions.
-- **Repository inspection:** this directory originally contained no application or Git repository. The initial planning documents were preserved and the requested bootstrap was added: Next.js/TypeScript/Tailwind, FastAPI, owner folders, pinned lockfiles, local two-database provisioning and independent migration runners. Git is initialized without commits or a remote. Most domain folders are scaffolds; their features remain planned. Database startup and GitHub setup are still pending.
+- **Repository inspection:** this directory originally contained no application or Git repository. The initial planning documents were preserved and the requested bootstrap was added: Next.js/TypeScript/Tailwind, FastAPI, owner folders, pinned lockfiles, local two-database provisioning and independent migration runners. Git is initialized without commits or a remote. Most domain folders are scaffolds; their features remain planned. Canonical DTOs/interfaces, generated OpenAPI/frontend types, synthetic fixtures and both matching-trigger tests are also present. Both local databases, role isolation and independent migration runners are verified (2026-09-07); GitHub setup is still pending. See [bootstrap evidence](docs/integration/BOOTSTRAP_HANDOFF.md) and [commit groups](docs/integration/COMMIT_GROUPS.md).
 
 The documents define product requirements. Speaker handoffs, presentation timing, bracketed stage directions, and instructions about shortening the talk are presentation material, not development instructions. Technical choices introduced by this plan are labeled as proposals. The sources do not establish a deadline, cloud budget, model choice, supported languages, or access to any job platform.
 
@@ -502,8 +502,8 @@ The initial status reflects the inspected directory: planning is complete, and *
 | Task/feature | Assigned member | Status | Dependencies | Notes | Completion |
 | --- | --- | --- | --- | --- | --- |
 | DOC-01 - Analyze sources, maintain plan and starter guide | Plai (M1; bootstrap custodian) | Done | Sources and user clarification | Includes independent new-job matching, explicit score and separate job database; no implementation implied. | 100% |
-| SET-01 - GitHub, ownership, skeleton, dependencies, CI skeleton | Plai (M1) | In Progress | DOC-01 | Shell/startup and core checks passed; local Git and locks prepared. Docker Linux engine failed to start; online DB checks, review/commit and actual GitHub target remain pending. | 80% |
-| SET-02 - Contracts, evidence/events, fixtures, generated client | Plai (M1), then M3 maintains | Not Started | SET-01; M2/M3 review | Second foundation commit; teammates branch from this checkpoint. | 0% |
+| SET-01 - GitHub, ownership, skeleton, dependencies, CI skeleton | Plai (M1) | In Progress | DOC-01 | Shell/startup and core checks passed; local Git and locks prepared. Both databases, role isolation and separate migration runners verified on 2026-09-07 using local port 15432. Review/commit and actual GitHub target remain pending. | 90% |
+| SET-02 - Contracts, evidence/events, fixtures, generated client | Plai (M1), then M3 maintains | In Progress | SET-01; M2/M3 review | DTOs/ports, OpenAPI/TS snapshots and synthetic adapters implemented; 32 tests pass, including independent new-job matching. Review canonical vocabulary/version rules and commit before completion; production adapters remain domain tasks. | 85% |
 | SET-03 - Formats, languages, source/cloud/model feasibility and limits | M3 | Not Started | SET-01; M1/M2 feasibility input | Resolve D01-D08 before dependent final choices. | 0% |
 
 ### Member 1
@@ -577,6 +577,8 @@ These are planning decisions to resolve, not claims that work is currently block
 | --- | --- | --- |
 | 2026-09-05 | Created source-traceable plan after inspecting the empty project directory, 10-slide presentation/notes, and five-page script. | DOC-01 |
 | 2026-09-05 | Confirmed Plai/M1; added user-required new-job matching and separate job database; specified initial scoring formula, database ownership, added tasks, and bootstrap/handoff guide. | User clarification; R16/R17; DOC-01 |
+| 2026-09-06 | Prepared SET-01 and initial SET-02 as two uncommitted groups. Shell build/startup, lint/types, 32 backend tests and generated-contract checks pass. Docker engine startup blocked online DB validation; review/publication pending. Shared ownership transfers to M3 and job DB files to M2 after review/commit. | [Handoff evidence](docs/integration/BOOTSTRAP_HANDOFF.md); SET-01/SET-02 remain In Progress |
+| 2026-09-07 | Docker recovered after Plai reset Desktop. Verified career_app/career_jobs, separate roles, denied cross-database access and independent Alembic version tables. Local ignored environment uses port 15432 because Windows rejected 5432; shared defaults unchanged. Review/commit/publication still pending. | SET-01 evidence updated; domain tasks remain Not Started |
 
 ## 10. Final integration and deployment checklist
 

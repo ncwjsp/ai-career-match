@@ -20,6 +20,7 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest
+      - run: uv run python -m scripts.export_openapi --check
   frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -34,6 +35,32 @@ jobs:
         with:
           version: "11.19.0"
       - run: pnpm install --frozen-lockfile
+      - run: pnpm api:check
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm build
+  databases:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.2"
+          python-version: "3.12.14"
+      - run: uv sync --project services/backend --locked
+      - name: Start the two local databases
+        run: |
+          cp .env.example .env
+          docker compose --env-file .env -f infra/compose.yaml up -d --wait --wait-timeout 120
+      - name: Verify roles, isolation and independent migrations
+        working-directory: services/backend
+        run: |
+          uv run python -m scripts.check_databases
+          uv run alembic -c alembic-app.ini upgrade head
+          uv run alembic -c alembic-jobs.ini upgrade head
+      - name: Database logs
+        if: failure()
+        run: docker compose --env-file .env -f infra/compose.yaml logs --no-color
+      - name: Stop CI services
+        if: always()
+        run: docker compose --env-file .env -f infra/compose.yaml down

@@ -1,0 +1,1172 @@
+{
+  "mode": "fixture",
+  "description": "Synthetic fixtures only. Scores, profiles, jobs and explanations are predetermined; no NLP, scraping, ranking or LLM runs.",
+  "profiles": [
+    {
+      "candidate_id": "candidate-demo",
+      "resume_id": "resume-demo",
+      "profile_version": 1,
+      "language": "en",
+      "summary": "Synthetic student profile with Python, PyTorch and NLP projects.",
+      "skills": [
+        {
+          "name": "Python",
+          "evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "skills",
+              "page": 1,
+              "section": "skills",
+              "start": 0,
+              "end": 62,
+              "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+            }
+          ]
+        },
+        {
+          "name": "PyTorch",
+          "evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "skills",
+              "page": 1,
+              "section": "skills",
+              "start": 0,
+              "end": 62,
+              "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+            }
+          ]
+        },
+        {
+          "name": "NLP",
+          "evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "skills",
+              "page": 1,
+              "section": "skills",
+              "start": 0,
+              "end": 62,
+              "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+            }
+          ]
+        },
+        {
+          "name": "AWS",
+          "evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "skills",
+              "page": 1,
+              "section": "skills",
+              "start": 0,
+              "end": 62,
+              "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+            }
+          ]
+        }
+      ],
+      "education": [
+        {
+          "institution": "Example University",
+          "qualification": "BSc Computer Science",
+          "evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "education",
+              "page": 1,
+              "section": "education",
+              "start": 0,
+              "end": 41,
+              "excerpt": "Example University, BSc Computer Science."
+            }
+          ]
+        }
+      ],
+      "job_titles": [],
+      "organizations": [],
+      "experience": [],
+      "estimated_experience_years": null,
+      "projects": [
+        {
+          "name": "Synthetic NLP project",
+          "description": "Built a synthetic NLP classification project using Python and PyTorch.",
+          "evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "projects",
+              "page": 1,
+              "section": "projects",
+              "start": 0,
+              "end": 70,
+              "excerpt": "Built a synthetic NLP classification project using Python and PyTorch."
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "document_id": "resume-demo",
+          "document_version": 1,
+          "chunk_id": "skills",
+          "page": 1,
+          "section": "skills",
+          "start": 0,
+          "end": 62,
+          "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+        },
+        {
+          "document_id": "resume-demo",
+          "document_version": 1,
+          "chunk_id": "projects",
+          "page": 1,
+          "section": "projects",
+          "start": 0,
+          "end": 70,
+          "excerpt": "Built a synthetic NLP classification project using Python and PyTorch."
+        },
+        {
+          "document_id": "resume-demo",
+          "document_version": 1,
+          "chunk_id": "education",
+          "page": 1,
+          "section": "education",
+          "start": 0,
+          "end": 41,
+          "excerpt": "Example University, BSc Computer Science."
+        }
+      ],
+      "extraction_warnings": [
+        "Synthetic fixture. Employment history is unknown."
+      ],
+      "matching_enabled": true,
+      "expires_at": "2026-10-05T00:00:00Z"
+    }
+  ],
+  "jobs": [
+    {
+      "job_id": "job-demo-1",
+      "source_id": "fixture-source",
+      "source_url": "https://jobs.example.test/job-demo-1",
+      "content_version": 1,
+      "title": "NLP engineer",
+      "company": "Example Labs (synthetic)",
+      "description": "Required skills: Python, PyTorch, NLP, AWS, Docker.",
+      "summary": "Synthetic role for testing contract integration.",
+      "requirements": [
+        {
+          "skill": "Python",
+          "required": true,
+          "evidence": [
+            {
+              "document_id": "job-demo-1",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ]
+        },
+        {
+          "skill": "PyTorch",
+          "required": true,
+          "evidence": [
+            {
+              "document_id": "job-demo-1",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ]
+        },
+        {
+          "skill": "NLP",
+          "required": true,
+          "evidence": [
+            {
+              "document_id": "job-demo-1",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ]
+        },
+        {
+          "skill": "AWS",
+          "required": true,
+          "evidence": [
+            {
+              "document_id": "job-demo-1",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ]
+        },
+        {
+          "skill": "Docker",
+          "required": true,
+          "evidence": [
+            {
+              "document_id": "job-demo-1",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ]
+        }
+      ],
+      "other_requirements": [],
+      "evidence": [
+        {
+          "document_id": "job-demo-1",
+          "document_version": 1,
+          "chunk_id": "requirements",
+          "page": 1,
+          "section": "requirements",
+          "start": 0,
+          "end": 51,
+          "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+        }
+      ],
+      "language": "en",
+      "fetched_at": "2026-09-05T00:00:00Z",
+      "last_seen_at": "2026-09-05T00:00:00Z",
+      "posted_at": "2026-09-05T00:00:00Z",
+      "expires_at": null,
+      "active": true,
+      "data_origin": "fixture"
+    },
+    {
+      "job_id": "job-demo-2",
+      "source_id": "fixture-source",
+      "source_url": "https://jobs.example.test/job-demo-2",
+      "content_version": 1,
+      "title": "Applied ML engineer",
+      "company": "Example Labs (synthetic)",
+      "description": "Required skills: Python, PyTorch, NLP, AWS, Docker.",
+      "summary": "Synthetic role for testing contract integration.",
+      "requirements": [
+        {
+          "skill": "Python",
+          "required": true,
+          "evidence": [
+            {
+              "document_id": "job-demo-2",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ]
+        },
+        {
+          "skill": "PyTorch",
+          "required": true,
+          "evidence": [
+            {
+              "document_id": "job-demo-2",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ]
+        },
+        {
+          "skill": "NLP",
+          "required": true,
+          "evidence": [
+            {
+              "document_id": "job-demo-2",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ]
+        },
+        {
+          "skill": "AWS",
+          "required": true,
+          "evidence": [
+            {
+              "document_id": "job-demo-2",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ]
+        },
+        {
+          "skill": "Docker",
+          "required": true,
+          "evidence": [
+            {
+              "document_id": "job-demo-2",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ]
+        }
+      ],
+      "other_requirements": [],
+      "evidence": [
+        {
+          "document_id": "job-demo-2",
+          "document_version": 1,
+          "chunk_id": "requirements",
+          "page": 1,
+          "section": "requirements",
+          "start": 0,
+          "end": 51,
+          "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+        }
+      ],
+      "language": "en",
+      "fetched_at": "2026-09-05T00:00:00Z",
+      "last_seen_at": "2026-09-05T00:00:00Z",
+      "posted_at": "2026-09-05T00:00:00Z",
+      "expires_at": null,
+      "active": true,
+      "data_origin": "fixture"
+    }
+  ],
+  "embeddings": [
+    {
+      "entity_id": "candidate-demo",
+      "entity_version": 1,
+      "vector": [
+        1,
+        0,
+        0
+      ],
+      "model_id": "fixture-vector",
+      "model_revision": "fixture-v1",
+      "dimensions": 3,
+      "preprocessing_version": "fixture-v1",
+      "embedding_version": "fixture-v1"
+    },
+    {
+      "entity_id": "job-demo-1",
+      "entity_version": 1,
+      "vector": [
+        0.8,
+        0.6,
+        0
+      ],
+      "model_id": "fixture-vector",
+      "model_revision": "fixture-v1",
+      "dimensions": 3,
+      "preprocessing_version": "fixture-v1",
+      "embedding_version": "fixture-v1"
+    }
+  ],
+  "events": [
+    {
+      "schema_version": 1,
+      "event_id": "event-profile-1",
+      "event_type": "profile.ready",
+      "candidate_id": "candidate-demo",
+      "profile_version": 1,
+      "occurred_at": "2026-09-05T00:00:00Z"
+    },
+    {
+      "schema_version": 1,
+      "event_id": "event-job-2",
+      "event_type": "job.created",
+      "job_id": "job-demo-2",
+      "job_version": 1,
+      "occurred_at": "2026-09-05T00:00:00Z",
+      "content_ref": "jobs/job-demo-2/versions/1"
+    }
+  ],
+  "matches": [
+    {
+      "candidate_id": "candidate-demo",
+      "profile_version": 1,
+      "job_id": "job-demo-1",
+      "job_version": 1,
+      "score": 77,
+      "score_components": {
+        "semantic_fit": 0.8,
+        "skill_coverage": 0.7,
+        "semantic_weight": 0.7,
+        "skills_weight": 0.3,
+        "score_basis": "semantic_skills",
+        "model_revision": "fixture-v1",
+        "preprocessing_version": "fixture-v1"
+      },
+      "scoring_version": "semantic-skills-v1",
+      "skill_comparison": [
+        {
+          "skill": "Python",
+          "required": true,
+          "state": "present",
+          "job_evidence": [
+            {
+              "document_id": "job-demo-1",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ],
+          "resume_evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "skills",
+              "page": 1,
+              "section": "skills",
+              "start": 0,
+              "end": 62,
+              "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+            }
+          ],
+          "uncertainty_note": null
+        },
+        {
+          "skill": "PyTorch",
+          "required": true,
+          "state": "present",
+          "job_evidence": [
+            {
+              "document_id": "job-demo-1",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ],
+          "resume_evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "skills",
+              "page": 1,
+              "section": "skills",
+              "start": 0,
+              "end": 62,
+              "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+            }
+          ],
+          "uncertainty_note": null
+        },
+        {
+          "skill": "NLP",
+          "required": true,
+          "state": "present",
+          "job_evidence": [
+            {
+              "document_id": "job-demo-1",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ],
+          "resume_evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "skills",
+              "page": 1,
+              "section": "skills",
+              "start": 0,
+              "end": 62,
+              "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+            }
+          ],
+          "uncertainty_note": null
+        },
+        {
+          "skill": "AWS",
+          "required": true,
+          "state": "partial",
+          "job_evidence": [
+            {
+              "document_id": "job-demo-1",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ],
+          "resume_evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "skills",
+              "page": 1,
+              "section": "skills",
+              "start": 0,
+              "end": 62,
+              "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+            }
+          ],
+          "uncertainty_note": "Introductory coursework only."
+        },
+        {
+          "skill": "Docker",
+          "required": true,
+          "state": "missing",
+          "job_evidence": [
+            {
+              "document_id": "job-demo-1",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ],
+          "resume_evidence": [],
+          "uncertainty_note": null
+        }
+      ],
+      "strengths": [
+        "Python, PyTorch and NLP project evidence."
+      ],
+      "gaps": [
+        "AWS evidence is limited.",
+        "Docker is not evidenced in this synthetic resume."
+      ],
+      "short_reason": "Synthetic fixture pairing; no matching model has run.",
+      "evidence": [
+        {
+          "document_id": "resume-demo",
+          "document_version": 1,
+          "chunk_id": "skills",
+          "page": 1,
+          "section": "skills",
+          "start": 0,
+          "end": 62,
+          "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+        },
+        {
+          "document_id": "resume-demo",
+          "document_version": 1,
+          "chunk_id": "projects",
+          "page": 1,
+          "section": "projects",
+          "start": 0,
+          "end": 70,
+          "excerpt": "Built a synthetic NLP classification project using Python and PyTorch."
+        },
+        {
+          "document_id": "job-demo-1",
+          "document_version": 1,
+          "chunk_id": "requirements",
+          "page": 1,
+          "section": "requirements",
+          "start": 0,
+          "end": 51,
+          "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+        }
+      ],
+      "matched_at": "2026-09-05T00:00:00Z",
+      "data_origin": "fixture"
+    },
+    {
+      "candidate_id": "candidate-demo",
+      "profile_version": 1,
+      "job_id": "job-demo-2",
+      "job_version": 1,
+      "score": 84,
+      "score_components": {
+        "semantic_fit": 0.9,
+        "skill_coverage": 0.7,
+        "semantic_weight": 0.7,
+        "skills_weight": 0.3,
+        "score_basis": "semantic_skills",
+        "model_revision": "fixture-v1",
+        "preprocessing_version": "fixture-v1"
+      },
+      "scoring_version": "semantic-skills-v1",
+      "skill_comparison": [
+        {
+          "skill": "Python",
+          "required": true,
+          "state": "present",
+          "job_evidence": [
+            {
+              "document_id": "job-demo-2",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ],
+          "resume_evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "skills",
+              "page": 1,
+              "section": "skills",
+              "start": 0,
+              "end": 62,
+              "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+            }
+          ],
+          "uncertainty_note": null
+        },
+        {
+          "skill": "PyTorch",
+          "required": true,
+          "state": "present",
+          "job_evidence": [
+            {
+              "document_id": "job-demo-2",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ],
+          "resume_evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "skills",
+              "page": 1,
+              "section": "skills",
+              "start": 0,
+              "end": 62,
+              "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+            }
+          ],
+          "uncertainty_note": null
+        },
+        {
+          "skill": "NLP",
+          "required": true,
+          "state": "present",
+          "job_evidence": [
+            {
+              "document_id": "job-demo-2",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ],
+          "resume_evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "skills",
+              "page": 1,
+              "section": "skills",
+              "start": 0,
+              "end": 62,
+              "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+            }
+          ],
+          "uncertainty_note": null
+        },
+        {
+          "skill": "AWS",
+          "required": true,
+          "state": "partial",
+          "job_evidence": [
+            {
+              "document_id": "job-demo-2",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ],
+          "resume_evidence": [
+            {
+              "document_id": "resume-demo",
+              "document_version": 1,
+              "chunk_id": "skills",
+              "page": 1,
+              "section": "skills",
+              "start": 0,
+              "end": 62,
+              "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+            }
+          ],
+          "uncertainty_note": "Introductory coursework only."
+        },
+        {
+          "skill": "Docker",
+          "required": true,
+          "state": "missing",
+          "job_evidence": [
+            {
+              "document_id": "job-demo-2",
+              "document_version": 1,
+              "chunk_id": "requirements",
+              "page": 1,
+              "section": "requirements",
+              "start": 0,
+              "end": 51,
+              "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+            }
+          ],
+          "resume_evidence": [],
+          "uncertainty_note": null
+        }
+      ],
+      "strengths": [
+        "Python, PyTorch and NLP project evidence."
+      ],
+      "gaps": [
+        "AWS evidence is limited.",
+        "Docker is not evidenced in this synthetic resume."
+      ],
+      "short_reason": "Synthetic fixture pairing; no matching model has run.",
+      "evidence": [
+        {
+          "document_id": "resume-demo",
+          "document_version": 1,
+          "chunk_id": "skills",
+          "page": 1,
+          "section": "skills",
+          "start": 0,
+          "end": 62,
+          "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+        },
+        {
+          "document_id": "resume-demo",
+          "document_version": 1,
+          "chunk_id": "projects",
+          "page": 1,
+          "section": "projects",
+          "start": 0,
+          "end": 70,
+          "excerpt": "Built a synthetic NLP classification project using Python and PyTorch."
+        },
+        {
+          "document_id": "job-demo-2",
+          "document_version": 1,
+          "chunk_id": "requirements",
+          "page": 1,
+          "section": "requirements",
+          "start": 0,
+          "end": 51,
+          "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+        }
+      ],
+      "matched_at": "2026-09-05T00:00:00Z",
+      "data_origin": "fixture"
+    }
+  ],
+  "recommendations": {
+    "candidate_id": "candidate-demo",
+    "profile_version": 1,
+    "revision": 1,
+    "updated_at": "2026-09-05T00:00:00Z",
+    "refresh_state": "idle",
+    "results": [
+      {
+        "candidate_id": "candidate-demo",
+        "profile_version": 1,
+        "job_id": "job-demo-1",
+        "job_version": 1,
+        "score": 77,
+        "score_components": {
+          "semantic_fit": 0.8,
+          "skill_coverage": 0.7,
+          "semantic_weight": 0.7,
+          "skills_weight": 0.3,
+          "score_basis": "semantic_skills",
+          "model_revision": "fixture-v1",
+          "preprocessing_version": "fixture-v1"
+        },
+        "scoring_version": "semantic-skills-v1",
+        "skill_comparison": [
+          {
+            "skill": "Python",
+            "required": true,
+            "state": "present",
+            "job_evidence": [
+              {
+                "document_id": "job-demo-1",
+                "document_version": 1,
+                "chunk_id": "requirements",
+                "page": 1,
+                "section": "requirements",
+                "start": 0,
+                "end": 51,
+                "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+              }
+            ],
+            "resume_evidence": [
+              {
+                "document_id": "resume-demo",
+                "document_version": 1,
+                "chunk_id": "skills",
+                "page": 1,
+                "section": "skills",
+                "start": 0,
+                "end": 62,
+                "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+              }
+            ],
+            "uncertainty_note": null
+          },
+          {
+            "skill": "PyTorch",
+            "required": true,
+            "state": "present",
+            "job_evidence": [
+              {
+                "document_id": "job-demo-1",
+                "document_version": 1,
+                "chunk_id": "requirements",
+                "page": 1,
+                "section": "requirements",
+                "start": 0,
+                "end": 51,
+                "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+              }
+            ],
+            "resume_evidence": [
+              {
+                "document_id": "resume-demo",
+                "document_version": 1,
+                "chunk_id": "skills",
+                "page": 1,
+                "section": "skills",
+                "start": 0,
+                "end": 62,
+                "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+              }
+            ],
+            "uncertainty_note": null
+          },
+          {
+            "skill": "NLP",
+            "required": true,
+            "state": "present",
+            "job_evidence": [
+              {
+                "document_id": "job-demo-1",
+                "document_version": 1,
+                "chunk_id": "requirements",
+                "page": 1,
+                "section": "requirements",
+                "start": 0,
+                "end": 51,
+                "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+              }
+            ],
+            "resume_evidence": [
+              {
+                "document_id": "resume-demo",
+                "document_version": 1,
+                "chunk_id": "skills",
+                "page": 1,
+                "section": "skills",
+                "start": 0,
+                "end": 62,
+                "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+              }
+            ],
+            "uncertainty_note": null
+          },
+          {
+            "skill": "AWS",
+            "required": true,
+            "state": "partial",
+            "job_evidence": [
+              {
+                "document_id": "job-demo-1",
+                "document_version": 1,
+                "chunk_id": "requirements",
+                "page": 1,
+                "section": "requirements",
+                "start": 0,
+                "end": 51,
+                "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+              }
+            ],
+            "resume_evidence": [
+              {
+                "document_id": "resume-demo",
+                "document_version": 1,
+                "chunk_id": "skills",
+                "page": 1,
+                "section": "skills",
+                "start": 0,
+                "end": 62,
+                "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+              }
+            ],
+            "uncertainty_note": "Introductory coursework only."
+          },
+          {
+            "skill": "Docker",
+            "required": true,
+            "state": "missing",
+            "job_evidence": [
+              {
+                "document_id": "job-demo-1",
+                "document_version": 1,
+                "chunk_id": "requirements",
+                "page": 1,
+                "section": "requirements",
+                "start": 0,
+                "end": 51,
+                "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+              }
+            ],
+            "resume_evidence": [],
+            "uncertainty_note": null
+          }
+        ],
+        "strengths": [
+          "Python, PyTorch and NLP project evidence."
+        ],
+        "gaps": [
+          "AWS evidence is limited.",
+          "Docker is not evidenced in this synthetic resume."
+        ],
+        "short_reason": "Synthetic fixture pairing; no matching model has run.",
+        "evidence": [
+          {
+            "document_id": "resume-demo",
+            "document_version": 1,
+            "chunk_id": "skills",
+            "page": 1,
+            "section": "skills",
+            "start": 0,
+            "end": 62,
+            "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+          },
+          {
+            "document_id": "resume-demo",
+            "document_version": 1,
+            "chunk_id": "projects",
+            "page": 1,
+            "section": "projects",
+            "start": 0,
+            "end": 70,
+            "excerpt": "Built a synthetic NLP classification project using Python and PyTorch."
+          },
+          {
+            "document_id": "job-demo-1",
+            "document_version": 1,
+            "chunk_id": "requirements",
+            "page": 1,
+            "section": "requirements",
+            "start": 0,
+            "end": 51,
+            "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+          }
+        ],
+        "matched_at": "2026-09-05T00:00:00Z",
+        "data_origin": "fixture",
+        "match_run_id": "run-profile-1",
+        "revision": 1,
+        "rank": 1,
+        "job_summary": "Synthetic role for testing contract integration.",
+        "source_url": "https://jobs.example.test/job-demo-1",
+        "last_seen_at": "2026-09-05T00:00:00Z",
+        "index_version": "fixture-v1",
+        "analysis_id": "analysis-demo"
+      }
+    ],
+    "next_cursor": null
+  },
+  "explanation": {
+    "candidate_id": "candidate-demo",
+    "revision": 1,
+    "profile_version": 1,
+    "job_id": "job-demo-1",
+    "job_version": 1,
+    "scoring_version": "semantic-skills-v1",
+    "state": "ready",
+    "text": "Synthetic explanation: Python, PyTorch and NLP project evidence supports this pairing. AWS evidence is introductory; Docker is not evidenced.",
+    "strengths": [
+      "Python, PyTorch and NLP project evidence."
+    ],
+    "gaps": [
+      "AWS evidence is limited.",
+      "Docker is not evidenced in this synthetic resume."
+    ],
+    "evidence": [
+      {
+        "document_id": "resume-demo",
+        "document_version": 1,
+        "chunk_id": "skills",
+        "page": 1,
+        "section": "skills",
+        "start": 0,
+        "end": 62,
+        "excerpt": "Python, PyTorch and NLP projects; introductory AWS coursework."
+      },
+      {
+        "document_id": "resume-demo",
+        "document_version": 1,
+        "chunk_id": "projects",
+        "page": 1,
+        "section": "projects",
+        "start": 0,
+        "end": 70,
+        "excerpt": "Built a synthetic NLP classification project using Python and PyTorch."
+      },
+      {
+        "document_id": "job-demo-1",
+        "document_version": 1,
+        "chunk_id": "requirements",
+        "page": 1,
+        "section": "requirements",
+        "start": 0,
+        "end": 51,
+        "excerpt": "Required skills: Python, PyTorch, NLP, AWS, Docker."
+      }
+    ],
+    "model_version": "fixture-no-llm",
+    "prompt_version": "fixture-v1",
+    "generated_at": "2026-09-05T00:00:00Z"
+  },
+  "analysis": {
+    "analysis_id": "analysis-demo",
+    "candidate_id": "candidate-demo",
+    "resume_id": "resume-demo",
+    "state": "ready",
+    "created_at": "2026-09-05T00:00:00Z",
+    "updated_at": "2026-09-05T00:00:00Z",
+    "corpus_snapshot": "fixture-initial",
+    "warnings": [
+      "Synthetic fixture; no file was uploaded."
+    ],
+    "error": null,
+    "result_count": 1
+  },
+  "match_runs": [
+    {
+      "run_id": "run-profile-1",
+      "event": {
+        "schema_version": 1,
+        "event_id": "event-profile-1",
+        "event_type": "profile.ready",
+        "candidate_id": "candidate-demo",
+        "profile_version": 1,
+        "occurred_at": "2026-09-05T00:00:00Z"
+      },
+      "state": "ready",
+      "checkpoint": null,
+      "created_at": "2026-09-05T00:00:00Z",
+      "updated_at": "2026-09-05T00:00:00Z",
+      "error": null,
+      "published_revisions": {
+        "candidate-demo": 1
+      }
+    },
+    {
+      "run_id": "run-job-2",
+      "event": {
+        "schema_version": 1,
+        "event_id": "event-job-2",
+        "event_type": "job.created",
+        "job_id": "job-demo-2",
+        "job_version": 1,
+        "occurred_at": "2026-09-05T00:00:00Z",
+        "content_ref": "jobs/job-demo-2/versions/1"
+      },
+      "state": "ready",
+      "checkpoint": null,
+      "created_at": "2026-09-05T00:00:00Z",
+      "updated_at": "2026-09-05T00:00:00Z",
+      "error": null,
+      "published_revisions": {
+        "candidate-demo": 2
+      }
+    }
+  ],
+  "errors": [
+    {
+      "error": {
+        "code": "NOT_IMPLEMENTED",
+        "message": "This feature is planned but not implemented.",
+        "retryable": false,
+        "request_id": "fixture-request"
+      }
+    },
+    {
+      "error": {
+        "code": "UNREADABLE_RESUME",
+        "message": "No readable text could be extracted.",
+        "retryable": false,
+        "request_id": "fixture-unreadable"
+      }
+    }
+  ]
+}

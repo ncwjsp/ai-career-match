@@ -2,9 +2,9 @@
 
 You are **M1 / Plai**. Your long-term work is resume parsing, candidate NLP, shared text/embedding utilities, and the upload/profile UI. First, prepare a small shared foundation so your friends can clone the same contracts and develop independently.
 
-**Current state:** the SET-01 runnable shell is prepared and Git is initialized locally. No commits or remote exist. Review the staged foundation before continuing shared contracts. Database provisioning is configured but not verified because Docker Desktop could not start its Linux engine.
+**Current state:** SET-01 and initial SET-02 are implemented locally, with 32 backend tests passing and frontend build/type checks passing. Git is initialized with SET-01 staged and SET-02 left as working changes for your review. No commits or remote exist. Both databases, role isolation and independent migration runners are now verified locally on port 15432 (2026-09-07); shared examples retain 5432. Read [bootstrap evidence](docs/integration/BOOTSTRAP_HANDOFF.md) and follow the exact [two-commit instructions](docs/integration/COMMIT_GROUPS.md); do not stage everything before the first commit.
 
-## 1. Make the first shared foundation
+## 1. Review the prepared shared foundation
 
 Do **SET-01 and the initial SET-02 before A-01**. You temporarily own shared files for these two commits. After they land on `main`, M3 takes over shared configuration/contracts, M2 takes the job database, and you focus on your M1 folders. Teammates can review the foundation as you build it; their implementation branches should start from the published checkpoint.
 
@@ -54,7 +54,7 @@ by me. Leave changes ready for my review and commit.
 
 ## 2. Commit and publish the foundation
 
-Run the README checks and review changed files. Git is already initialized on `main`; do not reinitialize it. The staged index contains the SET-01 snapshot. Review `git diff --cached` and commit that checkpoint first. Only afterward stage the contract/handoff changes for SET-02. No secrets, real resumes, downloaded corpora or model weights belong in either commit.
+Run the README checks and review changed files. Git is already initialized on `main`; do not reinitialize it. The staged index contains the SET-01 snapshot. Review `git diff --cached` and commit that checkpoint first. Only afterward stage the contract/handoff changes for SET-02. No secrets, real resumes, downloaded corpora or model weights belong in either commit. See [COMMIT_GROUPS.md](docs/integration/COMMIT_GROUPS.md) for the exact commands. After both commits, you can immediately start A-01; your friends can start B-09 and C-01 from the same checkpoint once it is shared.
 
 Create an **empty** GitHub repository under your chosen account/organization, select its visibility, and add your two friends as collaborators. Replace `YOUR_GITHUB_URL` below with its actual HTTPS or SSH clone URL:
 
