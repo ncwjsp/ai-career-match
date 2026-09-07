@@ -1,5 +1,14 @@
 # Two focused commit groups
 
+> Historical bootstrap record. SET-01 (`0a00918`) and initial SET-02
+> (`858c58b`) are now published on main at
+> [ncwjsp/ai-career-match](https://github.com/ncwjsp/ai-career-match).
+> Pre-commit/staging/remote statements and commands below describe the original
+> delivery snapshot; do not rerun them. GitHub CI results are still unverified
+> here. Use [START_HERE.md](../../START_HERE.md) and [plan.md](../../plan.md)
+> for current task orders and the 2026-09-07 manual-import/Railway scope.
+
+
 At delivery, Git is initialized on main with **no commits and no remote**.
 SET-01 is already staged. SET-02 is in the remaining working-tree changes and
 untracked source files. Some files appear as AM: their staged version belongs

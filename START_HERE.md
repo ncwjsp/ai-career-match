@@ -1,154 +1,127 @@
 # Start here, Plai
 
-You are **M1 / Plai**. Your long-term work is resume parsing, candidate NLP, shared text/embedding utilities, and the upload/profile UI. First, prepare a small shared foundation so your friends can clone the same contracts and develop independently.
+You are **M1 / Plai**. Read [plan.md](plan.md) for the central scope/tracker and [README.md](README.md) for the actual installation and test commands.
 
-**Current state:** SET-01 and initial SET-02 are implemented locally, with 32 backend tests passing and frontend build/type checks passing. Git is initialized with SET-01 staged and SET-02 left as working changes for your review. No commits or remote exist. Both databases, role isolation and independent migration runners are now verified locally on port 15432 (2026-09-07); shared examples retain 5432. Read [bootstrap evidence](docs/integration/BOOTSTRAP_HANDOFF.md) and follow the exact [two-commit instructions](docs/integration/COMMIT_GROUPS.md); do not stage everything before the first commit.
+## Current checkpoint
 
-## 1. Review the prepared shared foundation
+The repository is [ncwjsp/ai-career-match](https://github.com/ncwjsp/ai-career-match). SET-01 (`0a00918`) and initial SET-02 (`858c58b`) are published on `main`. Do not recreate or recommit the bootstrap.
 
-Do **SET-01 and the initial SET-02 before A-01**. You temporarily own shared files for these two commits. After they land on `main`, M3 takes over shared configuration/contracts, M2 takes the job database, and you focus on your M1 folders. Teammates can review the foundation as you build it; their implementation branches should start from the published checkpoint.
+A-01 is published at `a8d4c91` on `feat/m1/a-01-resume-parsers`, with recorded evidence of 58 parser tests / 90 total backend tests passing. It is not merged into main yet. M3 must coordinate its shared dependency handoff (`pypdf==6.17.0`, `defusedxml==0.7.1`), review and CI before merging. Its source/tests/docs stay on that feature branch until merge; this scope revision does not copy or replace them.
 
-| Checkpoint | Commit suggestion | What must be available |
-| --- | --- | --- |
-| 1. Runnable skeleton | `chore: bootstrap shared project foundation (SET-01)` | Next.js/TypeScript/Tailwind shell; minimal FastAPI health endpoint; version-pinned dependency manifests/lockfiles; feature/module folders; `.gitignore`, `.gitattributes`, safe `.env.example`; local database setup; README install/run/check commands; minimal CI. |
-| 2. Shared contracts and handoff | `feat: define v1 contracts and fixtures (SET-02)` | Canonical profile/job/match/event DTOs and interfaces; generated OpenAPI/frontend types; synthetic fixtures; tests checking interface/fixture compatibility; ownership map and teammate starting tasks. |
+The bootstrap has shell/health endpoints, synthetic adapters and generated contracts. Product endpoints are planned 501 responses; queues/repositories are in-memory test doubles. Local database startup, separate roles and independent migration runners were verified; real domain tables, import flow, ranking, explanations and deployment remain assigned work. See [historical bootstrap evidence](docs/integration/BOOTSTRAP_HANDOFF.md). Published commits alone do not establish GitHub CI or teammate review.
 
-Bootstrap details:
+## Revised scope, 2026-09-07
 
-- Use a single backend package with separate resume, jobs, matching, explanation, and orchestration folders as defined in `plan.md`.
-- Provide `APP_DATABASE_URL` for `career_app` and `JOB_DATABASE_URL` for `career_jobs`. One local PostgreSQL container may host both databases. Initialize databases/roles in infrastructure; keep application/job tables and migration histories owned by M3/M2 respectively.
-- Include retained candidate/profile versions, `MatchRun`, job-change events, and recommendation revisions in contracts. Matching must not depend on an upload request being active.
-- Publish `score_pair(profile, job, scoring_version)` and batch matching interfaces. The initial formula is `100 * (0.70 * semantic_similarity + 0.30 * required_skill_coverage)`; use the full edge-case rules in `plan.md`.
-- Include fake profiles/jobs/events so friends need no resume uploads, job-source credentials, AWS account, or model download to start their component tests. A fake response must be visibly identified as a fixture.
-- Implement only the shell/health endpoint and useful contract checks during bootstrap. Do not build friends' ranking, scraping, database domain models, or generation features. Planned endpoints are not complete until their handlers are implemented; scaffolds must not return misleading success.
-- Add owner comments or a Markdown ownership map until real GitHub handles are known. Configure CODEOWNERS after the handles are supplied; do not invent identities.
-- Put actual run/test commands in README after verifying them. Do not claim a fresh clone works based only on directory creation.
-- Record what is working, what is mocked, remaining decisions, and the bootstrap commit in the handoff. SET-03 cloud/live-source decisions can continue afterward; they must not block fixture-based collaboration.
+- A team member pastes a permitted job URL into a small import page. The proposed access rule is team/admin only, pending confirmation before the access contract is frozen.
+- Import one posting into `career_jobs`; submit the same URL to refresh it. An unchanged import does not create duplicate events. A failed refresh preserves the previous usable version and reports the error.
+- New/changed jobs automatically match retained active candidates through durable events. Candidate users still upload one resume; no additional target-job input is required.
+- No cron, recurring scraper or site-discovery crawler is planned. Source links and last successful checks show the limits of manually maintained freshness.
+- Target Railway: Next.js, FastAPI, one CPU worker, one PostgreSQL service hosting `career_app` and `career_jobs`, plus a private bucket. Use PostgreSQL queues and stored vectors with exact retrieval for the small corpus. No AWS services or external search cluster are required.
+- Keep the 70/30 semantic/required-skill formula, NLP entities/evidence, summaries, grounded explanations, five-method comparison and LDA research. See the full formula and edge cases in the plan.
 
-Original bootstrap request (retained for scope/reference; do not rerun it over the prepared work):
+Railway is a proposed deployment, not something already provisioned. M3 confirms workspace access, model memory and a budget before paid setup. The $5 Hobby fee includes $5 of resource usage; usage above that and external LLM calls cost more. [Railway pricing](https://docs.railway.com/pricing/plans)
 
-```text
-I am Plai (M1). Read plan.md and START_HERE.md, then implement the shared
-bootstrap for SET-01 and initial SET-02 in this repository. Inspect existing
-files first and preserve any changes already present.
+## Task orders
 
-Create a minimal runnable Next.js/TypeScript/Tailwind shell and FastAPI
-backend, the planned ownership folders, pinned dependency workflows, safe
-environment examples, local PostgreSQL setup with separate career_app and
-career_jobs databases, README commands, and minimal CI.
+Each person works on a separate task branch from current main. Do not wait for Plai to finish all resume NLP: use synthetic profiles, jobs and adapter interfaces.
 
-Define canonical profile/job/evidence/match/event contracts, repository and
-worker interfaces, generated API/frontend types, and small synthetic fixtures.
-Model both profile-ready matching and new-job matching against retained
-candidates. Use independent application/job migration folders. Provide mock
-adapters so all members can develop without AWS or live job-source access.
+| Member | Start now | Next | Later |
+| --- | --- | --- | --- |
+| Plai / M1 | Review A-01 and get M3's dependency PR merged; finish A-01 review/merge | A-02 shared preprocessing/POS/NER/aliases and evidence mapping; then A-03 profile extraction and A-04 embeddings | A-05 routes, A-06 intake/profile UI, A-07 CPU packaging/parity |
+| M2 | B-09 job database/outbox; investigate B-01 single-job URL source feasibility | B-02 fixture-backed import service and isolated import UI after M3 freezes contracts; B-04 baselines; B-03 stored-vector retrieval | B-06 skills/APIs, B-10 incremental matching, B-05 advanced ranking, B-07/B-08 research |
+| M3 | Take shared-file ownership; small dependency/import-contract PRs; C-01 application persistence and durable queue | C-03 API client/routes and import access guard; C-08 event dispatch; C-02/C-04 with fixtures | C-05 integration, C-06 Railway deployment, C-07 CI/runbook; INT-01/INT-02 gates |
 
-Verify startup and useful contract/fixture tests. Keep real resume NLP,
-scraping, ranking, and explanations for their assigned members. Record what
-is implemented versus mocked, and prepare two focused commit groups for
-SET-01 and SET-02. Update tracker statuses only from actual evidence.
-After bootstrap, hand shared files/contracts to M3 and job DB files to M2.
-Do not create a remote repository or push without an actual target supplied
-by me. Leave changes ready for my review and commit.
-```
+M2 alone owns `services/backend/app/db/jobs/` and `migrations/jobs/`; M3 owns `app/db/app/` and `migrations/app/`. M2 also owns the planned `apps/web/src/features/job-import/` component and its tests. M3 owns its route mounting, API client, shared UI and access guard. See [ownership](docs/integration/OWNERSHIP.md).
 
-## 2. Commit and publish the foundation
+## Clone and branch
 
-Run the README checks and review changed files. Git is already initialized on `main`; do not reinitialize it. The staged index contains the SET-01 snapshot. Review `git diff --cached` and commit that checkpoint first. Only afterward stage the contract/handoff changes for SET-02. No secrets, real resumes, downloaded corpora or model weights belong in either commit. See [COMMIT_GROUPS.md](docs/integration/COMMIT_GROUPS.md) for the exact commands. After both commits, you can immediately start A-01; your friends can start B-09 and C-01 from the same checkpoint once it is shared.
-
-Create an **empty** GitHub repository under your chosen account/organization, select its visibility, and add your two friends as collaborators. Replace `YOUR_GITHUB_URL` below with its actual HTTPS or SSH clone URL:
+A teammate clones once:
 
 ```bash
-git remote add origin YOUR_GITHUB_URL
-git push -u origin main
-```
-
-If `origin` already exists, inspect `git remote -v` and use the existing intended remote instead of adding another one. GitHub authentication and a Git author identity must be configured on each person's computer; use each person's own identity. These steps follow [GitHub's existing-project upload guide](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github).
-
-After bootstrap is published, share the repository URL and commit hash. Teammates each clone it once:
-
-```bash
-git clone YOUR_GITHUB_URL
+git clone https://github.com/ncwjsp/ai-career-match.git
 cd ai-career-match
 ```
 
-They should read README, this guide, and their section in `plan.md`, then run the verified setup checks. From the shared checkpoint, each person creates a separate task branch. For subsequent tasks, first update `main` with `git pull --ff-only origin main`.
+Before each new task, with a clean working tree:
 
-## 3. Start three independent branches
-
-| Member | First branch | First useful deliverable |
-| --- | --- | --- |
-| Plai / M1 | `feat/m1/a-01-resume-parsers` | PDF/DOCX extraction into the shared text/evidence contract using safe local test fixtures. |
-| M2 / suggested Baibua | `feat/m2/b-09-job-database` | Job database models/migrations/repository and outbox, with a fixture ingestion test. Investigate permitted sources in parallel. |
-| M3 / suggested Nai | `feat/m3/c-01-app-persistence` | Application database, retained candidate/session data, match queue/repository, and mock worker integration. |
-
-You do not need to finish the resume feature before your friends start. M2 uses the committed synthetic profiles; M3 uses fake processor/matcher implementations. Replace mocks at integration without changing contracts unilaterally.
-
-### Your next prompt after bootstrap
-
-```text
-I am Plai (M1). Read plan.md and the committed bootstrap contracts. Work on
-feat/m1/a-01-resume-parsers and implement A-01: PDF/DOCX validation and text
-extraction with evidence references and clear unreadable-file errors.
-Use synthetic fixtures and the existing test/dependency setup. Own only the
-resume module, its tests, and docs/resume. Do not put matching logic in the
-upload/parser code. Report any needed shared contract/dependency changes
-for M3 to coordinate. Run relevant tests and leave a focused commit-ready
-change with the task ID and implementation limitations.
+```bash
+git switch main
+git pull --ff-only origin main
+git switch -c feat/m2/b-09-job-database
 ```
 
-### Prompt for M2 after cloning
+Use the branch appropriate to your task. Do not create A-01 again: it already exists. M1's next branch is `feat/m1/a-02-shared-nlp` after A-01 merges. If independent A-02 work starts earlier, use canonical synthetic ProcessedText fixtures and avoid importing unmerged A-01 internals.
+
+Run README checks, stage explicit owned paths, and open a focused PR with task ID, behavior, limitations and evidence. M3 merges shared contract/dependency changes before dependent feature work, regenerates snapshots/lockfiles, and updates the tracker after receiving evidence. Do not edit another member's files concurrently or mark an open feature branch Done.
+
+## Next prompt for Plai
+
+Use after A-01 is reviewed and merged:
 
 ```text
-I am Member 2 (job data and matching owner). Read README.md, START_HERE.md,
-plan.md, and the current contracts. Do not recreate the bootstrap. Create
-feat/m2/b-09-job-database from the published main checkpoint.
-
-Implement B-09 in app/db/jobs, migrations/jobs, and jobs tests: use the
-separate career_jobs database; store sources, permitted job snapshots,
-normalized jobs/versions, ingestion runs, and a transactional job-change
-outbox. Use the agreed interfaces and fixture jobs; do not require resumes
-or write candidate tables. Verify idempotent writes and event rollback.
-
-Keep app/db/app, application migrations, root config, public contracts,
-and UI files with M3. Document any change requests instead of editing those
-files concurrently. Next work is fixture ingestion B-02 and the shared
-scoring/incremental matching path B-04/B-06/B-10, so newly collected jobs
-can match stored candidate profiles. Run relevant checks and produce a
-focused PR/commit-ready change with evidence and outstanding dependencies.
+I am Plai (M1). Inspect existing work and read plan.md, START_HERE.md,
+the canonical contracts and A-01 extraction docs. Create
+feat/m1/a-02-shared-nlp from current main and implement A-02: versioned
+shared cleaning/tokenization, POS/NER, skill aliases and evidence mapping.
+Preserve technical terms, original evidence coordinates and unknown values.
+Follow the agreed language/model scope; document unresolved choices instead
+of claiming unsupported language coverage. Work in app/nlp, tests/nlp and
+docs/resume; coordinate shared dependency/contract changes with M3.
+Use synthetic resume and job fixtures. Keep ranking and job import logic
+with M2. Run relevant tests and leave changes ready for review without
+committing or pushing.
 ```
 
-### Prompt for M3 after cloning
+## First prompt for M2
 
 ```text
-I am Member 3 (application integration and explanations owner). Read
-README.md, START_HERE.md, plan.md, and the published contracts. Confirm
-the bootstrap handoff and create feat/m3/c-01-app-persistence. Do not
-recreate the scaffold or modify M1/M2 domain files.
-
-Implement C-01 in app/db/app, migrations/app, core and orchestration:
-career_app persistence, retained candidate/session scope, profile and
-match repositories, durable queues and useful worker states. Use fake
-resume processor/matcher adapters so Plai and M2 can keep working.
-
-Prepare C-08's job-event dispatcher interface and revision publication
-without editing M2's job database/migrations. Model matching triggered
-both by profile-ready and by newly ingested jobs, without a second upload
-or an open browser. Own shared contracts/configuration after this handoff;
-coordinate changes with both consumers. Verify persistence/recovery/session
-boundaries and leave a focused PR/commit-ready change with test evidence.
+I am M2, the job-data and matching owner. Inspect existing files and read
+README.md, START_HERE.md, plan.md and canonical contracts. Create
+feat/m2/b-09-job-database from current main; preserve existing work.
+Implement B-09 only in app/db/jobs, migrations/jobs and jobs tests/docs:
+career_jobs sources, permitted snapshots, normalized jobs and immutable
+versions, manual import-run metadata and a transactional job-change outbox.
+Use synthetic jobs. Verify idempotency, unchanged versus changed updates,
+transaction rollback and separation from career_app. Do not require any
+resume upload, cron or live source. Propose necessary shared protocol/DTO
+changes to M3 instead of editing them concurrently. Run relevant checks;
+leave changes ready for review without committing or pushing.
 ```
 
-## 4. First team integration check
+For B-02 afterward, ask M3 to merge the import request/status contract first. Build a single-URL adapter and an import/status component in your own feature folder. Confirm one permitted source works; do not promise JobThai/JobsDB until verified. M3 mounts the page and enforces access. Use fake fetch/NLP/queue adapters while dependencies are unfinished.
 
-Keep these as acceptance steps for INT-01; they are not claimed to work at bootstrap:
+## First prompt for M3
 
-1. Ingest fixture jobs into `career_jobs` before any resume upload.
-2. Upload a safe sample resume once; persist its profile in `career_app` and produce ranked jobs.
+```text
+I am M3, the shared application/integration owner. Read README.md,
+START_HERE.md, plan.md and canonical contracts; inspect and preserve work.
+Take the shared-file handoff. First prepare focused shared changes for
+A-01 parser dependencies and the new manual URL import request/status/port,
+coordinating with M1/M2 and regenerating contracts/types/lockfiles as needed.
+Do not combine these changes with a large implementation PR.
+Then create feat/m3/c-01-app-persistence from current main and implement
+career_app persistence, retained candidate/session scope, profile/match
+repositories and PostgreSQL-backed queues/worker lifecycle. Use fake
+resume processor and matcher adapters. Prepare C-08 event dispatch with
+both matching triggers and no browser or second-upload dependency.
+Do not edit M2 job tables/migrations or M1 resume/NLP internals. Plan
+Railway web/API/worker/PostgreSQL plus private bucket for C-06; there is no
+cron or AWS requirement. Keep paid deployment separate until budget and
+target are agreed. Verify recovery/session boundaries; leave focused
+changes ready for review without committing or pushing.
+```
+
+## First integration gate: INT-01
+
+These are acceptance steps for later implementation, not current capabilities:
+
+1. Import synthetic jobs into `career_jobs` before any candidate exists.
+2. Upload one synthetic resume; persist its profile/embedding in `career_app` and get ranked jobs.
 3. Record the profile version and close the browser.
-4. Insert a new relevant fixture job through ingestion; consume its durable change event and run matching.
-5. Reopen the same retained candidate session. The relevant job appears in the updated ranked set without another upload or parser invocation.
-6. Check identical pair scores from both matching triggers, including the 77.0% worked example in `plan.md`.
-7. Replay the event, change/expire the job, and restart the worker; verify stable results, no duplicates, and correct recovery.
+4. Submit a new relevant job URL through the protected importer using a fixture fetch adapter; consume the committed event.
+5. Reopen the retained session and verify the new job appears without another upload or parser call.
+6. Verify identical pair scores in both directions, including the 77.0% worked example. Select a job and check evidence-grounded explanation states.
+7. Re-import unchanged content, update requirements, fail a refresh, mark a job closed and restart the worker. Check no duplicates, preserved prior data and correct recovery.
+8. Reject unsafe URLs and unauthorized import requests; keep candidate data isolated.
 
-After each feature PR, the owner provides task status and test evidence; M3 serializes plan updates. Use PRs into `main`, avoid direct changes in another member's folders, and merge shared-contract changes before the dependent implementations.
+INT-02 repeats the flow on Railway with a permitted real URL and real storage/LLM adapters. Record measured cost, freshness, model memory, latency and limitations. Source coverage is the set of manually imported jobs, not a continuously monitored job market.
