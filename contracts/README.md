@@ -1,7 +1,7 @@
 # Initial v1 contract guide
 
 Status: implemented bootstrap contracts, pending M2/M3 review. M3 maintains these
-after Plai's review/commit checkpoint. This guide describes the current code;
+after Plai's published bootstrap checkpoint (`858c58b`). This guide describes the current code;
 the full plan still defines the eventual product.
 
 ## Single source and ownership
@@ -104,3 +104,27 @@ All valid planned HTTP requests return 501 until wired to domain implementations
 Schema response shapes describe future success responses; the generated snapshot
 labels these paths `x-implementation-status: planned`. Only health and the
 read-only fixture endpoint return successful implemented responses now.
+
+## Pending manual-import contract follow-up (2026-09-07)
+
+The revised plan removes scheduled collection and proposes team-only single-job
+URL imports. These changes are not yet in canonical DTOs, OpenAPI or generated
+frontend types. M3 owns the follow-up PR; M2 reviews the producer/storage side.
+
+- Add `JobImportRequest` and `JobImportRun` for a submitted URL, import ID,
+  queued/running/succeeded/unchanged/failed state, outcome/job version and
+  attempt/success timestamps; use the existing error envelope.
+- Agree `POST /api/v1/job-imports`, status polling, duplicate-submit behavior,
+  supported-source errors and a team-only manual job-closure operation.
+- Current `JobIngestor.run(source_id: str)` needs an agreed URL-oriented adapter
+  or replacement port. Do not silently treat a URL as a source ID.
+- Preserve atomic job-version/outbox semantics and existing profile/job events.
+  The importer has no resume, candidate or upload requirement. Import metadata
+  lives in career_jobs; queued application work remains behind M3 interfaces.
+- Regenerate OpenAPI/frontend types and synthetic fixtures in the same PR.
+  M2's import component consumes generated types through M3's shared client.
+- Railway storage/LLM and PostgreSQL retrieval remain adapter implementations;
+  they do not justify provider fields in canonical candidate/match evidence.
+
+The two matching triggers and score formula above remain unchanged. No cron,
+AWS credentials or live job source is needed for contract/fixture tests.

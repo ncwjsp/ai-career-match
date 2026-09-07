@@ -3,7 +3,20 @@
 A three-person NLP project. This checkout contains the SET-01 shell and initial
 SET-02 contracts, synthetic data and test doubles. Start with [plan.md](plan.md),
 [START_HERE.md](START_HERE.md) and the [bootstrap handoff](docs/integration/BOOTSTRAP_HANDOFF.md).
-Real resume processing, job ingestion, ranking and explanations remain assigned work.
+Real domain integration remains assigned work. A-01 parsing is published on
+`feat/m1/a-01-resume-parsers` at `a8d4c91`, awaiting review/merge.
+
+## Revised product scope
+
+Team/admin URL imports (proposed access rule) maintain jobs in `career_jobs`;
+re-import a URL to update it. New/changed jobs automatically match retained
+candidates in `career_app`, while candidates still need only one resume.
+No scheduled scraping is required. Railway is the proposed target for web,
+API, a CPU worker, one PostgreSQL service with two databases, and a private
+bucket. Stored vectors and PostgreSQL queues keep the service count small.
+See [architecture and costs](plan.md#2-proposed-architecture-and-technology-stack).
+The import UI/API, real adapters and deployment are not implemented by this
+scope revision; production mode remains intentionally disabled in the bootstrap.
 
 ## Requirements
 
@@ -13,7 +26,7 @@ Real resume processing, job ingestion, ranking and explanations remain assigned 
 
 Install the listed tools and check their versions first. Runtime files, exact
 dependency versions and both lockfiles are committed. Internet access is needed
-for the first dependency installation; no AWS credentials or model downloads are
+for the first dependency installation; no hosting credentials or model downloads are
 needed for the default mock mode.
 
 ## Start locally
@@ -123,7 +136,7 @@ docker compose --env-file .env -f infra/compose.yaml stop
 **Verified locally on 2026-09-07:** both databases start, each owner connects only
 to its own database, and both Alembic upgrade commands pass. Each database has
 its own empty migration-version table; domain tables are still assigned work.
-CI includes these checks but has not run on GitHub yet.
+CI includes these checks; GitHub run results have not been verified here.
 
 This checkout uses **127.0.0.1:15432** because Windows rejected binding port 5432
 with error 10013. Root `.env` and `services/backend/.env` are aligned to 15432;
@@ -135,7 +148,7 @@ URLs before starting Compose. No system networking settings need changing.
 ## Contracts and generated types
 
 Edit Python DTOs in `services/backend/app/contracts/models.py`; interfaces live
-next to them in `interfaces.py`. After the bootstrap review/commit, **M3 is the
+next to them in `interfaces.py`. After the published bootstrap handoff, **M3 is the
 single editor** for these files. M1/M2 propose changes with producer/consumer
 examples. See the [contract guide](contracts/README.md).
 
@@ -181,11 +194,11 @@ CI repeats code, fixture, schema/type drift and database checks on pushes/PRs.
 
 ## Working independently
 
-- **Plai / M1:** start A-01 in `feat/m1/a-01-resume-parsers`.
+- **Plai / M1:** finish A-01 review/merge, then start A-02 shared NLP.
 - **M2:** start B-09 in `feat/m2/b-09-job-database`; investigate permitted sources
-  for B-01. JobThai/JobsDB are candidate sources, not approved integrations.
+  for single-URL imports in B-01. JobThai/JobsDB are candidate sources, not approved integrations.
 - **M3:** start C-01 in `feat/m3/c-01-app-persistence`; take custody of shared
-  config/contracts and route wiring after review/commit.
+  config/contracts and route wiring; coordinate A-01 dependencies and new import DTOs.
 
 Use the [ownership map](docs/integration/OWNERSHIP.md) and teammate prompts in
 START_HERE.md. M3 alone updates shared manifests, generated contracts, CI and the
@@ -194,5 +207,7 @@ application chain. Use fixture adapters until the other owner's implementation
 is ready. Keep dependency changes in a separate reviewed PR and regenerate the
 appropriate lockfile.
 
-The [two commit groups](docs/integration/COMMIT_GROUPS.md) are prepared for Plai's
-review. No commit, remote repository or push has been made.
+Bootstrap commits `0a00918` (SET-01) and `858c58b` (initial SET-02) are published
+on main at [ncwjsp/ai-career-match](https://github.com/ncwjsp/ai-career-match).
+The [two commit groups](docs/integration/COMMIT_GROUPS.md) are historical records;
+do not rerun their initial commit/publish commands.

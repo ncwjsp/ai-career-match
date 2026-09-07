@@ -1,5 +1,14 @@
 # Bootstrap handoff — Plai / M1
 
+> Historical bootstrap record. SET-01 (`0a00918`) and initial SET-02
+> (`858c58b`) are now published on main at
+> [ncwjsp/ai-career-match](https://github.com/ncwjsp/ai-career-match).
+> Pre-commit/staging/remote statements and commands below describe the original
+> delivery snapshot; do not rerun them. GitHub CI results are still unverified
+> here. Use [START_HERE.md](../../START_HERE.md) and [plan.md](../../plan.md)
+> for current task orders and the 2026-09-07 manual-import/Railway scope.
+
+
 Prepared 2026-09-06; database verification updated 2026-09-07. SET-01 and initial SET-02 are ready for local review.
 No commits or remote exist yet. The staged index is the SET-01 checkpoint;
 the remaining changes form SET-02. See [commit instructions](COMMIT_GROUPS.md).
