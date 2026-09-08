@@ -12,10 +12,7 @@ from app.orchestration.refresh import RecommendationPublisher
 from app.orchestration.runs import SqlMatchRunRepository
 from app.orchestration.worker import MatchWorker
 from app.testing.memory import MemoryJobs
-from tests.app.conftest import NOW  # noqa: F401 - re-exported for tests
 from tests.integration.fakes import CountingMatcher
-
-pytest_plugins = ["tests.app.conftest"]
 
 
 @pytest.fixture

@@ -13,8 +13,7 @@ from app.db.app.profiles import (
     SqlResumeUploadRepository,
 )
 from app.db.app.sessions import SqlSessionStore
-from tests.app.conftest import NOW
-from tests.app.factories import make_embedding, make_profile
+from tests.app.factories import NOW, make_embedding, make_profile
 
 
 @pytest.fixture

@@ -1,10 +1,12 @@
-"""Shared fixtures for `career_app` persistence tests. Owner: M3 (C-01).
+"""Shared backend test fixtures. Owner: M3.
 
-Runs the real Alembic chain (`alembic-app.ini`) against a fresh temp-file SQLite
-database per test, the same approach M2 uses for `career_jobs`, so a broken
-migration fails these tests too. PostgreSQL is not available in this environment
-(no Docker daemon); the schema is dialect-portable and CI's database job plus
-plan.md's staging milestone cover the real PostgreSQL path.
+Only fixtures every suite may need live here. The `career_app` database is set
+up per test by running the real Alembic chain (`alembic-app.ini`) against a
+fresh temp-file SQLite database, the same approach `tests/jobs` uses for
+`career_jobs`, so a broken migration fails these tests too. PostgreSQL is not
+available in this environment (no Docker daemon); the schema is dialect-portable
+and CI's database job plus plan.md's staging milestone cover the real
+PostgreSQL path.
 """
 
 from datetime import UTC, datetime
@@ -17,12 +19,13 @@ from alembic.config import Config
 from app.core.clock import FixedClock
 from app.db.app.database import create_app_engine, session_factory
 
-BACKEND_ROOT = Path(__file__).resolve().parents[2]
+BACKEND_ROOT = Path(__file__).resolve().parents[1]
 NOW = datetime(2026, 9, 5, tzinfo=UTC)
 
 
 @pytest.fixture
 def clock() -> FixedClock:
+    """A clock the test advances explicitly, so retention and leases are testable."""
     return FixedClock(NOW)
 
 
