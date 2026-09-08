@@ -1,13 +1,13 @@
 """Independent app database migrations. Owner: M3."""
 
 from alembic import context
-from sqlalchemy import MetaData, create_engine
+from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 
 from app.core.settings import Settings
+from app.db.app.models import Base
 
-# Domain owner replaces this with their models' metadata in C-01/B-09.
-target_metadata = MetaData()
+target_metadata = Base.metadata
 database_url = Settings().app_database_url.get_secret_value()
 
 if context.is_offline_mode():
