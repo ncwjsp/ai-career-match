@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     sagemaker_timeout_seconds: int = 30
 
     # Explanation generation (C-02). `fake` is deterministic and offline.
-    llm_provider: Literal["fake", "bedrock", "http"] = "fake"
+    llm_provider: Literal["fake", "bedrock"] = "fake"
     llm_model_id: str = ""
     llm_api_key: SecretStr = SecretStr("")
     llm_timeout_seconds: int = 30
