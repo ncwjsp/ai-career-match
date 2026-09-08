@@ -7,13 +7,13 @@ from fastapi.responses import JSONResponse
 from app.api.planned import PlannedFeatureError
 from app.api.router import router
 from app.contracts.models import ErrorDetail, ErrorResponse
+from app.core.errors import AppError
 from app.core.settings import Settings
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     config = settings or Settings()
-    if config.app_env == "production":
-        raise RuntimeError("Production is not supported by the bootstrap.")
+    config.validate_for_runtime()
     application = FastAPI(
         title="AI Career Match API",
         version="0.1.0",
@@ -25,12 +25,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.state.settings = config
     application.include_router(router)
 
-    def error_response(code: str, message: str, status: int):
+    def error_response(code: str, message: str, status: int, retryable: bool = False):
         body = ErrorResponse(
             error=ErrorDetail(
                 code=code,
                 message=message,
-                retryable=False,
+                retryable=retryable,
                 request_id=str(uuid4()),
             )
         )
@@ -41,6 +41,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return error_response(
             "NOT_IMPLEMENTED", "This feature is planned but not implemented.", 501
         )
+
+    @application.exception_handler(AppError)
+    async def app_error(request: Request, exc: AppError):
+        # Domain code raises AppError; only this handler builds the wire body.
+        return error_response(exc.code, exc.message, exc.status, exc.retryable)
 
     @application.exception_handler(RequestValidationError)
     async def validation_error(request: Request, exc: RequestValidationError):
@@ -54,7 +59,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @application.get("/health/ready", tags=["health"])
     def ready() -> dict[str, str]:
-        return {"status": "ok", "mode": "mock", "dependencies": "not_required"}
+        # Mock mode deliberately reports that no external dependency is needed;
+        # real mode names the adapters a deployment must actually reach.
+        if config.app_mode == "mock":
+            return {"status": "ok", "mode": "mock", "dependencies": "not_required"}
+        return {
+            "status": "ok",
+            "mode": "real",
+            "dependencies": f"postgresql,{config.object_store_backend},{config.embedding_backend}",
+        }
 
     return application
 
