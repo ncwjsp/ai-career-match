@@ -27,13 +27,21 @@ def test_development_endpoint_is_explicitly_synthetic(client):
         "/api/v1/resumes/resume-demo/profile",
         "/api/v1/candidates/candidate-demo/recommendations",
         "/api/v1/jobs/job-demo-1",
-        "/api/v1/candidates/candidate-demo/recommendations/1/jobs/job-demo-1/explanation",
     ],
 )
 def test_planned_features_never_masquerade_as_working_routes(client, path):
+    """Uploads and the profile read belong to A-05; jobs/recommendations to B-06."""
     response = client.get(path)
     assert response.status_code == 501
     assert ErrorResponse.model_validate(response.json()).error.code == "NOT_IMPLEMENTED"
+
+
+def test_the_implemented_explanation_route_refuses_an_unscoped_session(client):
+    """C-02 is implemented, so this route answers with access control, not 501."""
+    path = "/api/v1/candidates/candidate-demo/recommendations/1/jobs/job-demo-1/explanation"
+    response = client.get(path)
+    assert response.status_code == 403
+    assert ErrorResponse.model_validate(response.json()).error.code == "FORBIDDEN"
 
 
 def test_upload_is_not_parsed_or_reported_as_successful(client):
