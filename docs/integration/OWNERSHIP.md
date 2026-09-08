@@ -17,7 +17,7 @@ The public DTOs belong to contracts; domain implementations belong to their owne
 
 M3 also owns app/testing, scripts, tests/core, tests/contracts, and the generated API files. M2 requests shared infrastructure/CI changes through M3; M1/M2 do not edit shared dependency manifests concurrently. All backend paths above are relative to services/backend, and web paths to apps/web/src.
 
-## Manual import and Railway coordination
+## Manual import and infrastructure coordination
 
 M2 owns the planned import component under `apps/web/src/features/job-import/`
 and the importer/jobs router. M3 alone edits `apps/web/src/app/` to mount it,
@@ -25,8 +25,9 @@ shared client/types, server-side import access, queue integration and deployment
 Freeze the import request/status protocol together before integration. Existing
 `JobIngestor.run(source_id)` does not yet describe the new URL flow.
 
-M3 prepares Railway web/API/worker/PostgreSQL and a private bucket, while M2
-owns job-vector persistence/retrieval. M1 owns CPU model packaging. No owner
-needs to create cron, OpenSearch, SageMaker, Bedrock or AWS storage resources.
+M3 prepares web/API/worker/PostgreSQL, the private AWS S3 bucket and the
+SageMaker inference endpoint, while M2 owns job-vector persistence/retrieval.
+M1 owns CPU model packaging and its SageMaker artifact. No owner needs to create
+cron, OpenSearch or Bedrock resources (2026-09-08 revision).
 Keep separate application/job migrations and shared dependency PRs. The scope
 change does not transfer resume or matching implementation to another member.

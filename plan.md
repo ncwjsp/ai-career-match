@@ -1,10 +1,10 @@
 # AI Career Match - Project Plan
 
-**Last updated:** 2026-09-07
+**Last updated:** 2026-09-08
 
 **Team:** 3 members
 
-**Current milestone:** SET-01 and initial SET-02 are published on `main` (`0a00918`, `858c58b`). A-01 is published separately at `a8d4c91` and awaits review/merge. Manual URL imports and Railway deployment are planned, not implemented.
+**Current milestone:** SET-01 and initial SET-02 are published on `main` (`0a00918`, `858c58b`). A-01 is merged on `main`. Manual URL imports and cloud deployment are planned, not implemented; the 2026-09-08 revision restores AWS S3 storage and SageMaker model hosting as required infrastructure.
 
 **Document maintainer:** M3 after bootstrap; this scope revision is requested by Plai (M1). Serialize subsequent shared-document edits through M3.
 
@@ -27,6 +27,15 @@ The documents define product requirements. Speaker handoffs, presentation timing
 **User clarification, 2026-09-05:** the user is Plai (M1). Matching must run independently of resume uploads so newly collected company jobs are also matched to existing candidates. Collected jobs must live in their own database, and the plan must specify a usable matching-score formula. These explicit requirements extend the presentation/script and supersede the earlier single-database proposal. They do not imply an employer posting portal; new postings enter through permitted source ingestion.
 
 **User scope revision, 2026-09-07:** replace scheduled job collection with a small manual job-URL import/update flow. Prefer Railway as the simpler deployment target. This supersedes the schedule in S6/P3 and the AWS services in S9/P4-P5; the source documents are preserved as historical inputs, not edited to imply they proposed Railway. The core NLP, scoring, research, two-database separation, and both matching triggers remain required. Proposed access rule: team/admin imports jobs into the shared corpus; candidates still need only one resume. This access assumption can be revised before SET-02 import contracts are frozen.
+
+**Team scope revision, 2026-09-08 (relayed by M3/Nai):** the team decided to use **AWS S3** for resume object storage and **Amazon SageMaker** for NLP/embedding model hosting. This restores part of the S9/P4-P5 infrastructure that the 2026-09-07 revision had removed. It changes infrastructure only:
+
+- `ObjectStore` gains an S3 adapter; the local filesystem adapter stays for tests, offline development and CI. Original resumes remain private and are read through the application.
+- Embedding/NLP inference gains a SageMaker endpoint adapter behind the existing `Embedder` port. The local CPU adapter stays and A-07 parity is now checked **local versus SageMaker**.
+- **OpenSearch and Bedrock remain out of the MVP.** Retrieval stays stored vectors plus exact cosine in PostgreSQL (B-03), and explanation generation stays provider-neutral (C-02); Bedrock only becomes one permitted provider option now that an AWS account exists.
+- The `career_app`/`career_jobs` separation, manual URL imports, both matching triggers, the 70/30 formula and the research scope are unchanged.
+- Where web/API/worker/PostgreSQL are hosted is **not settled by this revision** and stays open in D07: Railway remains viable alongside the AWS services, and an AWS-native host is now also possible. Cross-provider egress and latency must be measured before that choice is frozen.
+- An AWS account, budget owner and credential policy are now prerequisites. Required environment variables are listed in `services/backend/.env.example`; no key is committed.
 
 Keep source references stable. At setup, record a team-accessible location and checksum for each original file in `docs/sources/README.md`; do not depend on one member's Downloads folder. Store a shared copy only if appropriate for the repository's visibility.
 
@@ -53,7 +62,7 @@ The objectives are to reduce repetitive manual job searching, recognize equivale
 | R11 | Apply LDA topic modeling to job-market topics and skill clusters. | B-07: offline corpus analysis and documented findings | S5; P3 |
 | R12 | Compare keyword matching, TF-IDF with cosine similarity, sentence embedding similarity, transformer-based matching, and hybrid re-ranking. | B-04/B-05/B-08: five reproducible experiments | P4 |
 | R13 | Evaluate precision, recall, F1, and human judgment of ranked lists. | B-08, VAL-01: benchmark, metrics, human review, report | P4-P5 |
-| R14 | Keep Next.js/FastAPI/NLP and PostgreSQL; target a small Railway deployment with CPU models and a provider-neutral LLM adapter. | A-04/A-07, B-03, C-01/C-02/C-06, INT-02 | User revision 2026-09-07 supersedes AWS stack in S9/P4-P5 |
+| R14 | Keep Next.js/FastAPI/NLP and PostgreSQL; store resumes in a private AWS S3 bucket, host NLP/embedding inference on a SageMaker endpoint, and keep a provider-neutral LLM adapter with local adapters for tests. | A-04/A-07, B-03, C-01/C-02/C-06, INT-02 | S9, P4-P5 for S3/SageMaker; team revision 2026-09-08. Hosting of web/API/worker/PostgreSQL stays open in D07 |
 | R15 | Treat JobThai, JobsDB, company career pages, and public APIs/feeds as candidates; use only where Terms of Service, robots.txt, and API policies permit, respecting rate limits. Treat slide companies and percentages as mock data. | B-01/B-02/B-08, C-04, REL-01: provenance, labeling, reporting | S6-S8; P3-P5 |
 | R16 | Separate resume processing from matching; new or updated jobs must be matched against retained active candidate profiles automatically. | B-10, C-08, INT-01/INT-02: incremental matching and result refresh | User clarification, 2026-09-05 |
 | R17 | Store scraped/retrieved job data in its own database, independently of resumes and candidate/application data. | B-09, C-01/C-06: separate job/application databases and connections | User clarification, 2026-09-05 |
@@ -79,11 +88,13 @@ flowchart TD
     Jobs --> Worker[Durable worker - M3 using M2 matching]
     Candidate[Candidate uploads one resume] --> Web[Next.js - M1 intake and M3 results]
     Web --> API[FastAPI - M3 composition]
-    API --> Files[Private Railway bucket]
+    API --> Files[Private AWS S3 bucket]
     API --> App[(career_app: profiles, embeddings, queues, matches)]
     Files --> NLP[Resume NLP - M1]
     Worker --> NLP
     NLP --> App
+    NLP --> SageMaker[SageMaker inference endpoint]
+    SageMaker --> App
     App --> Worker
     Worker --> App
     App --> Results[Ranked jobs and skill gaps]
@@ -120,7 +131,7 @@ Retained profiles include stable `candidate_id`, `profile_version`, `matching_en
 | --- | --- | --- |
 | PostgreSQL `career_jobs` / `JOB_DATABASE_URL` | Approved sources, permitted posting snapshots, jobs/versions, requirements/evidence, job embeddings, manual import runs/check metadata, transactional outbox | M2 schemas, repositories and migrations |
 | PostgreSQL `career_app` / `APP_DATABASE_URL` | Sessions, upload metadata, retained profiles/embeddings, analysis/match queues, processed events, pair scores, recommendation revisions, explanations | M3 schemas, repositories and migrations; M1 uses interfaces |
-| Private Railway bucket | Original resumes available to API and worker through `ObjectStore`; configured retention and opaque keys | M3 adapter/provisioning; local/test adapter remains available |
+| Private AWS S3 bucket | Original resumes available to API and worker through `ObjectStore`; configured retention, opaque keys, versioning and block-public-access | M3 adapter/provisioning; local filesystem adapter remains available for tests/offline work |
 
 One PostgreSQL service hosts both logical databases with distinct roles, connection URLs and migration chains. There are no cross-database foreign keys or SQL joins: consumers resolve versioned IDs through repositories. Database provisioning is M3's infrastructure task; M2 alone edits the job schema/history.
 
@@ -131,22 +142,22 @@ The job version and outbox event commit atomically. M3's dispatcher copies commi
 | Area | Proposed implementation | Owner |
 | --- | --- | --- |
 | Web/API | Existing pinned Next.js, TypeScript, Tailwind and FastAPI/Python workflows; keep lockfiles | M3 shared setup; domain owners implement features |
-| NLP/embeddings | spaCy/Hugging Face/Sentence Transformers/PyTorch as selected and pinned in SET-03; small CPU model, loaded in worker | M1 shared preprocessing/embedding; M2 ranking |
+| NLP/embeddings | spaCy/Hugging Face/Sentence Transformers/PyTorch as selected and pinned in SET-03. Deployed inference runs on a SageMaker endpoint behind the `Embedder` port; the in-process CPU model stays available for tests/offline runs | M1 shared preprocessing/embedding and packaging; M2 ranking; M3 endpoint adapter/provisioning |
 | Search | Store versioned vectors in the respective PostgreSQL databases; exact batched cosine retrieval in `app/search/` for the small corpus | M2; M3 supplies candidate repository |
-| Storage and queues | Two databases in one PostgreSQL service plus a private Railway bucket; database outbox/queues | M2 job data; M3 app data and infrastructure |
+| Storage and queues | Two PostgreSQL databases with distinct roles plus a private AWS S3 bucket; database outbox/queues | M2 job data; M3 app data and infrastructure |
 | Explanations | Provider-neutral hosted LLM API with evidence retrieval, structured validation, on-demand caching and request/token limits | M3; provider/model selected in SET-03 |
 | Research/model lifecycle | Local/offline five-method experiments, LDA, evaluation and optional evidence-justified fine-tuning; deploy only the selected CPU inference artifacts | M1 packaging; M2 evaluation/ranking |
-| Hosting | Railway web, API, worker and PostgreSQL services, plus the storage bucket | M3 |
+| Hosting | Web, API, CPU worker and PostgreSQL on the host chosen in D07; AWS S3 and the SageMaker endpoint regardless of that choice | M3 |
 
-OpenSearch, SageMaker, Bedrock, AWS S3 resources and scheduled source collection are removed from the MVP deployment requirements. No AWS account is required. “S3-compatible” describes the Railway bucket API, not an AWS deployment. Optional pgvector or another search service can be evaluated only if measured corpus size/latency warrants it; neither is a current dependency.
+AWS S3 and a SageMaker inference endpoint are required by the 2026-09-08 revision, so an AWS account, region and credential policy are prerequisites. **OpenSearch, Bedrock and scheduled source collection stay out of the MVP.** Retrieval remains stored vectors plus exact batched cosine; optional pgvector or a managed search service can be evaluated only if measured corpus size/latency warrants it. Bedrock is permitted as one provider behind the neutral LLM adapter but is not required.
 
-Railway offers private S3-compatible buckets suitable for shared API/worker file access. Keep original resumes private and authorize retrieval through the app. Do not assume separate service filesystems share uploads. [Railway storage buckets](https://docs.railway.com/storage-buckets)
+One private S3 bucket gives the API and worker shared access to uploaded originals; separate service filesystems do not share uploads. Block public access, enable default encryption and versioning, keep object keys opaque, and authorize every read through the application rather than a presigned public link. Scope credentials to that bucket prefix with an IAM policy, and prefer an instance/task role over long-lived keys wherever the chosen host supports one. S3 charges for storage, requests and egress; SageMaker charges per endpoint hour whether or not it is serving traffic, so a small instance type and a documented start/stop policy matter more than request volume at this corpus size. Record measured cost after the first sample run.
 
-For the proposed four services, start with one API process and one worker, a small batch size and CPU model; avoid loading models into every web/API process or hosting a large LLM. Record real RAM, CPU, volume, bucket and egress usage after a sample run. Hobby is $5/month including $5 of usage; usage above that increases the bill. Pro is $20/month including $20 of usage and may be relevant for team access. Select workspace access and plan in D07; neither tier is a guaranteed total project price. LLM API charges are additional. [Railway pricing](https://docs.railway.com/pricing/plans)
+For the proposed services, start with one API process and one worker, a small batch size and a CPU model; avoid loading models into every web/API process or hosting a large LLM. Record real RAM, CPU, volume, bucket, endpoint-hour and egress usage after a sample run. Hobby is $5/month including $5 of usage; usage above that increases the bill. Pro is $20/month including $20 of usage and may be relevant for team access. Select workspace access and plan in D07; neither tier is a guaranteed total project price. LLM API charges are additional. [Railway pricing](https://docs.railway.com/pricing/plans)
 
-M3 must agree a budget with the team before provisioning, configure alerts/resource limits, and document any hard cap's service-shutdown behavior. Do not promise always-on matching with a sleeping worker: pending work needs a running consumer. [Railway cost controls](https://docs.railway.com/pricing/cost-control)
+M3 must agree a budget with the team before provisioning any AWS or hosting resource, configure AWS Budgets alerts and host resource limits, and document any hard cap's service-shutdown behavior. A SageMaker endpoint left running is the most likely source of unexpected cost. Do not promise always-on matching with a sleeping worker: pending work needs a running consumer. [Railway cost controls](https://docs.railway.com/pricing/cost-control)
 
-The current bootstrap is mock-only and rejects production mode. C-01/C-06 must implement real adapters, protected imports/session access, deployment start commands, private connections, health checks and durable storage before INT-02 can claim a working Railway deployment. Infrastructure details are proposals, not resources created by this plan.
+The current bootstrap is mock-only and rejects production mode. C-01/C-06 must implement real adapters, protected imports/session access, deployment start commands, private connections, health checks and durable storage before INT-02 can claim a working deployment. Infrastructure details are proposals, not resources created by this plan.
 
 ### Proposed repository layout and exclusive editing boundaries
 
@@ -198,7 +209,7 @@ ai-career-match/
   ml/matching/                                 M2: matching model artifacts/configuration
   research/topics/                             M2: LDA analysis
   research/evaluation/                         M2: datasets manifest, labels, metrics, report
-  infra/                                      M3: containers, Railway config, deployment runbook
+  infra/                                      M3: containers, AWS/host config, deployment runbook
   docs/resume/                                 M1: extraction behavior and limitations
   docs/job-sources/, docs/matching/             M2: source register and scoring specification
   docs/sources/, docs/integration/              M3: source inventory and integration notes
@@ -321,12 +332,12 @@ M1 takes the intake UI to reduce M3's frontend workload. M2 owns the research ha
 
 | Task ID | Specific implementation tasks | Expected files/components/APIs | Completion evidence |
 | --- | --- | --- | --- |
-| C-01 | Implement shared config/errors, retained-session isolation, private Railway-bucket/local storage adapters, `career_app` candidate/match repositories, application migrations, durable queues and worker lifecycle. | `app/core/`, `app/db/app/`, `app/orchestration/`, `migrations/app/` | Queued work survives restart; active profile retention, session boundaries and cleanup tests pass. |
+| C-01 | Implement shared config/errors, retained-session isolation, private S3/local storage adapters, `career_app` candidate/match repositories, application migrations, durable queues and worker lifecycle. | `app/core/`, `app/db/app/`, `app/orchestration/`, `migrations/app/` | Queued work survives restart; active profile retention, session boundaries and cleanup tests pass. |
 | C-02 | Build RAG context from the current candidate and selected job evidence; implement provider-neutral hosted LLM generation, structured response validation, caching, timeouts, and evidence-only fallback presentation. | `app/modules/explanations/`, `tests/explanations/` | Explanations cite actual evidence and cannot change scores or skill states; service failures are visible. |
 | C-03 | Build app shell, shared UI, API transport/types, polling, routing, and processing/error/empty states; integrate M1's exported features and mount M2's import component. Own the shared import client and server-side team access guard. | `src/app/`, `src/components/ui/`, `src/lib/api/` | One upload leads to results; the separate import route uses M2 components and rejects unauthorized requests. |
 | C-04 | Build ranked list, summaries/scores, source/freshness, detail/skill/explanation states; fetch current candidate recommendations and show refresh state/latest update time as new jobs arrive. | `src/features/recommendations/`, `src/features/job-detail/` | R07-R10 and refreshed recommendation revisions display correctly, including return visits. |
 | C-05 | Wire domain routers and worker stages, persist result versions, connect detail selection to explanation generation, and add integration tests. | `app/main.py`, `app/api/router.py`, `app/orchestration/`, `tests/integration/`, `apps/web/e2e/` | End-to-end upload to ranked jobs and selected-job explanation with no extra job-search inputs. |
-| C-06 | Prepare Railway web/API/worker/PostgreSQL services and a private bucket; provision two logical databases and scoped roles, container/start commands, secrets, health checks, logs, budget controls, backup/restore and rollback. Keep models in the worker and replace the mock-only production guard with validated real-mode configuration. | `infra/`, `.github/workflows/`, `docs/integration/` | Repeatable Railway deployment with both databases and a successful manual URL import that triggers retained-candidate matching. |
+| C-06 | Prepare web/API/worker/PostgreSQL services on the D07 host plus the private S3 bucket and SageMaker endpoint; provision two logical databases and scoped roles, IAM policies, container/start commands, secrets, health checks, logs, budget controls, backup/restore and rollback. Keep model calls in the worker and replace the mock-only production guard with validated real-mode configuration. | `infra/`, `.github/workflows/`, `docs/integration/` | Repeatable deployment with both databases, S3 storage, the SageMaker endpoint and a successful manual URL import that triggers retained-candidate matching. |
 | C-07 | Maintain CI, contract generation, setup/runbook documentation, serialized shared-file changes, and this plan; lead release coordination. | `.github/`, `contracts/`, `README.md`, `plan.md` | Fresh clone instructions work; required checks gate merging; tracker references issues/PRs and evidence. |
 | C-08 | Dispatch durable job-change events into matching tasks; implement batch checkpoints/retries, active-profile checks, revision publication, expiry cleanup, reconciliation, and candidate-scoped results access. | `app/orchestration/job_events.py`, `refresh.py`, `app/db/app/`, `tests/integration/` | Crash/replay loses no job change, creates no duplicate matches, and never requires the browser or resume upload handler to run. |
 
@@ -346,9 +357,9 @@ Plai was the shared-file editor for SET-01 and initial SET-02. After that publis
 | --- | --- | --- | --- |
 | SET-01 | Initialize Git/GitHub, names/handles, folder skeleton, runtimes/lockfiles, ignores, CI skeleton, and ownership rules. | Plai (M1) | M2/M3 can run the checkout. Include plan and handoff guide; M3 owns shared setup files after bootstrap. |
 | SET-02 | Publish initial v1 contracts, states, skill taxonomy, evidence/event schemas, and synthetic fixtures for both matching triggers. | Plai (M1), then M3 maintains | M2/M3 review; generated client/backend agree; include separate job/application repository protocols. |
-| SET-03 | Decide formats/languages, single-URL source feasibility, Railway access/budget, LLM provider, CPU models, limits, retention and import access. | M3 | M1 supplies parser/model constraints; M2 supplies source/model constraints; record D01-D09 below. |
+| SET-03 | Decide formats/languages, single-URL source feasibility, AWS account/region/budget and application host, LLM provider, model/instance types, limits, retention and import access. | M3 | M1 supplies parser/model constraints; M2 supplies source/model constraints; record D01-D09 below. |
 | INT-01 | First local flow plus new-job refresh: upload once, get ranked jobs, ingest a new job, update the same candidate's results, and select a grounded explanation. | M3 | M1/M2 fix their modules; verify no second parse/upload. Fixtures are clearly labeled. |
-| INT-02 | Railway model/storage integration, manual imports, version alignment, candidate cleanup and truthful source freshness. | M3 | M1 verifies CPU model parity; M2 verifies import/retrieval/embedding versions; no silent test-adapter fallback. |
+| INT-02 | Deployed model/storage integration over S3 and the SageMaker endpoint, manual imports, version alignment, candidate cleanup and truthful source freshness. | M3 | M1 verifies CPU model parity; M2 verifies import/retrieval/embedding versions; no silent test-adapter fallback. |
 | VAL-01 | Human relevance labels, entity/summary review, skill-gap review, and explanation grounding assessment. | M2 | All members review samples; adjudicate disagreements before final metrics. M2 alone merges label files. |
 | VAL-02 | Complete functional, recovery, session/privacy, accessibility, performance, and live-source validation. | M3 | Each owner fixes their failures and attaches evidence. |
 | REL-01 | Final integration, release checklist, reproducibility report, deployment, and demo rehearsal. | M3 | All three sign off on their domains; record limitations and rollback evidence. |
@@ -380,7 +391,7 @@ The sequence below is gate-based because no delivery date or available hours wer
 | P1 - Independent components | M1 A-01 through A-04 and upload UI; M2 fixture ingestion/lexical baselines and index adapter; M3 persistence, shell/results fixtures, explanation adapter. | G1: each module passes its tests against agreed fixtures and exports the required interface. | TBD |
 | P2 - First complete local flow | A-05/A-06, B-03/B-06/B-09/B-10, C-02 through C-05/C-08, INT-01. | G2: upload yields ranked jobs/detail; ingest a new fixture job into the job database and refresh the same candidate without reuploading. | TBD |
 | P3 - Live data and research | B-01/B-02 manual live URL imports; B-05/B-07/B-08; A-07; shared labels/review. | G3: a permitted URL can be imported and explicitly refreshed, automatically updating retained-candidate matches; all five approaches and LDA have reproducible reports; selected score/model versions are recorded. | TBD |
-| P4 - Railway integration and hardening | C-06/C-07, INT-02, VAL-01/VAL-02; run real PostgreSQL repositories, bucket storage, CPU inference, manual imports and the selected LLM API. | G4: staging acceptance passes, freshness/session isolation/recovery verified, measured limitations documented. | TBD |
+| P4 - Cloud integration and hardening | C-06/C-07, INT-02, VAL-01/VAL-02; run real PostgreSQL repositories, S3 storage, SageMaker inference, manual imports and the selected LLM API. | G4: staging acceptance passes, freshness/session isolation/recovery verified, measured limitations documented. | TBD |
 | P5 - Release and handoff | REL-01; finish checklist, reproducibility instructions, demo, deployment verification, and rollback rehearsal. | G5: release deployed and tagged, evidence linked, all required tracker items Done, and no unresolved release blocker. | TBD |
 
 **Critical dependencies:** contracts precede integration; shared preprocessing/model versions precede final indexing; permitted source access precedes claims of current job coverage; stable labels/splits precede final tuning/evaluation; real hosted-service access precedes deployment completion claims. A mock UI or offline demo is an intermediate milestone, not completion of the project under the revised scope.
@@ -481,7 +492,7 @@ SET-03 must set the supported corpus size, upload limit, allowed processing dura
 
 - Every PR: formatting/lint, TypeScript and Python checks selected at setup, affected unit tests, and contract/schema compatibility. Build the frontend when frontend or shared API changes occur.
 - Integration PRs: PostgreSQL-backed repository and vector-retrieval tests, migrations, generated-client drift check, and the upload-to-detail browser flow with deterministic service adapters.
-- Staging milestone: explicitly run a permitted URL import and actual Railway/storage/LLM adapters, evaluate restart/failure behavior, and attach sanitized evidence. Keep paid/network-dependent model evaluation out of ordinary PR checks.
+- Staging milestone: explicitly run a permitted URL import and the actual S3/SageMaker/LLM adapters, evaluate restart/failure behavior, and attach sanitized evidence. Keep paid/network-dependent model evaluation out of ordinary PR checks.
 - Release: rerun the end-to-end smoke test on the deployed version and retain measured research outputs. Do not substitute mocked integration checks for live deployment evidence.
 
 ## 9. Project Progress Tracker
@@ -539,7 +550,7 @@ Status reflects inspected local Git history and recorded validation. Bootstrap c
 | C-03 - Frontend shell, API client, polling and shared states | M3 | Not Started | SET-01; SET-02 | Supply interfaces for A-06 immediately. | 0% |
 | C-04 - Ranked jobs, summaries, detail and explanation UI | M3 | Not Started | C-03; SET-02 | Fixtures cover all skill/generation states. | 0% |
 | C-05 - Route wiring, orchestration and end-to-end tests | M3 | Not Started | C-01; A-05; B-06; C-02; C-04; A-06 | Integrate incrementally; verify one required input. | 0% |
-| C-06 - Railway services, secrets, budgets and rollback | M3 | Not Started | SET-03; C-01 adapters/worker entry points | Prepare config locally first; provision after budget agreement; live proof belongs to INT-02. | 0% |
+| C-06 - Deployment services, S3/SageMaker, secrets, budgets and rollback | M3 | Not Started | SET-03; C-01 adapters/worker entry points | Prepare config locally first; provision after budget agreement; live proof belongs to INT-02. | 0% |
 | C-07 - CI, documentation, contracts and plan maintenance | M3 | Not Started | SET-01; SET-02 | Start early; finish release-ready checks/runbook before REL-01. | 0% |
 | C-08 - Job-event dispatch, retries, recommendation revisions and refresh | M3 | Not Started | C-01; B-09; B-10 for real matching | Build with events/fake matcher first; no browser dependency. | 0% |
 
@@ -548,7 +559,7 @@ Status reflects inspected local Git history and recorded validation. Bootstrap c
 | Task/feature | Assigned member | Status | Dependencies | Notes | Completion |
 | --- | --- | --- | --- | --- | --- |
 | INT-01 - Local upload flow plus new-job refresh without reupload | M3; M1/M2 support | Not Started | C-05; A-04; B-03; B-02; B-10; C-08 | Demonstrate both matching triggers and both databases with labeled fixtures. | 0% |
-| INT-02 - Live Railway/manual-source integration and version alignment | M3; M1/M2 support | Not Started | INT-01; C-06; A-07; B-02; B-03 | Verify real services, refresh, cleanup, and model/index parity. | 0% |
+| INT-02 - Live cloud/manual-source integration and version alignment | M3; M1/M2 support | Not Started | INT-01; C-06; A-07; B-02; B-03 | Verify real services, refresh, cleanup, and model/index parity. | 0% |
 | VAL-01 - Human labels and NLP/summary/skill/explanation review | M2; all members review | Not Started | SET-02; B-02; A-03; B-06; C-02 for generated-output review | Create labeling rubric before B-05 tuning; M2 merges label files. | 0% |
 | VAL-02 - Full functional, recovery, browser and deployment acceptance | M3; each domain owner fixes | Not Started | INT-02; VAL-01; B-08 | Record measured limits and unresolved defects. | 0% |
 | REL-01 - Release, deployment checklist and demo handoff | M3; all members sign off | Not Started | VAL-02; B-07; B-08; C-07 | Tag release only after required gates pass. | 0% |
@@ -562,10 +573,10 @@ These are planning decisions to resolve, not claims that work is currently block
 | D01 | Are PDF and DOCX sufficient? Is legacy DOC or scanned-PDF OCR required? | M1 | G0 | Pending; proposed initial PDF/DOCX, detect unreadable scans. |
 | D02 | Supported resume/job languages and compatible extraction/embedding models. | M1 with M2 | G0 | Pending; align with selected live source. |
 | D03 | First permitted source, allowed data use/storage/display, source rules, manual recheck policy, and stale cutoff. | M2 | G0 | Pending; JobThai/JobsDB remain candidates. |
-| D04 | Embedding/cross-encoder versions, chunking, dimensions, CPU memory/runtime budget, and offline fine-tuning path. | M1 with M2 | Initial G0; final G3 | Pending; begin with pretrained baselines. |
+| D04 | Embedding/cross-encoder versions, chunking, dimensions, CPU memory/runtime budget, SageMaker instance type/serialization contract, and offline fine-tuning path. | M1 with M2 | Initial G0; final G3 | Pending; begin with pretrained baselines and verify local versus endpoint parity. |
 | D05 | Final score weights/normalization and evaluation split/k. | M2 | Protocol G1; final G3 | Initial formula: 70% clamped cosine + 30% required-skill coverage; partial=0.5; unknown requirements use semantic-only. Final tuning pending. |
 | D06 | Retained-session/profile matching lifetime, expiry/deletion, file limits and refresh latency/workload. | M3 with M1 | G0; measure at G2 | Pending duration/limits; new-job matching must work while browser is closed, until profile expiry/deletion. |
-| D07 | Railway workspace/plan/region, hosted LLM access, resource limits and spending cap. | M3 | G0 | Railway proposed on 2026-09-07; confirm team access, measured cost and budget before provisioning. No AWS dependency. |
+| D07 | AWS account/region, S3 bucket and SageMaker instance type, credential policy, application host (Railway or AWS-native), hosted LLM access, resource limits and spending cap. | M3 | G0 | Partly decided 2026-09-08: AWS S3 for resume storage and SageMaker for embedding inference. Account owner, region, instance type, endpoint start/stop policy, application host and budget remain pending; nothing is provisioned. |
 | D08 | Confirm teammate assignments/handles, GitHub visibility/remote, source location, estimates and dates. | Plai (M1) with all members | Bootstrap / G0 | Remote published at ncwjsp/ai-career-match; Plai confirmed as M1 and bootstrap owner; M2/Baibua and M3/Nai assignments and handles pending. |
 | D09 | Who may import job URLs and how is access protected? | M3 with M2 and Plai | Before B-02 integration | Proposed team/admin-only page and server-side guard; candidate upload remains the only required candidate input. Confirm before access contract freeze. |
 
@@ -577,6 +588,7 @@ These are planning decisions to resolve, not claims that work is currently block
 | 2026-09-05 | Confirmed Plai/M1; added user-required new-job matching and separate job database; specified initial scoring formula, database ownership, added tasks, and bootstrap/handoff guide. | User clarification; R16/R17; DOC-01 |
 | 2026-09-06 | Prepared SET-01 and initial SET-02 as two uncommitted groups. Shell build/startup, lint/types, 32 backend tests and generated-contract checks pass. Docker engine startup blocked online DB validation; review/publication pending. Shared ownership transfers to M3 and job DB files to M2 after review/commit. | [Handoff evidence](docs/integration/BOOTSTRAP_HANDOFF.md); SET-01/SET-02 remain In Progress |
 | 2026-09-07 | Docker recovered after Plai reset Desktop. Verified career_app/career_jobs, separate roles, denied cross-database access and independent Alembic version tables. Local ignored environment uses port 15432 because Windows rejected 5432; shared defaults unchanged. Review/commit/publication still pending. | SET-01 evidence updated; domain tasks remain Not Started |
+| 2026-09-08 | Team decided to use AWS S3 for resume storage and Amazon SageMaker for NLP/embedding inference, restoring that part of S9/P4-P5. Recorded required environment variables, kept OpenSearch/Bedrock and scheduled collection out of the MVP, and left the application host open in D07. Infrastructure only; no scope, formula or ownership change. | Team revision relayed by M3/Nai |
 | 2026-09-07 | Recorded published bootstrap commits `0a00918`/`858c58b` and A-01 feature `a8d4c91`; replaced scheduled collection/AWS scope with manual URL imports and proposed Railway hosting. Reassigned B-02 UI, B-03 retrieval, A-07 packaging and C-06 deployment without changing task IDs or claiming implementation. | Plai user revision; M3 maintains shared docs/contracts |
 
 ## 10. Final integration and deployment checklist
@@ -609,15 +621,15 @@ M3 coordinates this checklist; the responsible member supplies evidence and chec
 
 ### Deployment and operations
 
-- [ ] Railway environment/region/plan, team access, LLM provider/model, measured resource use and spending limits are recorded.
-- [ ] Secrets are configured outside Git; database roles and bucket credentials are scoped; import endpoints require server-side team access; secrets never enter browser bundles.
+- [ ] AWS account/region, S3 bucket, SageMaker endpoint/instance type, application host, team access, LLM provider/model, measured resource use and spending limits are recorded.
+- [ ] Secrets are configured outside Git; database roles and AWS credentials are scoped by IAM policy to the project bucket prefix and endpoint; import endpoints require server-side team access; secrets never enter browser bundles.
 - [ ] Next.js/API routing, HTTPS, cookies/session isolation, allowed origins, file-size/time limits, and readiness checks work in staging.
 - [ ] Both database migration histories are applied in order; backup/restore expectations are documented; job embeddings can be rebuilt from versioned job text and the outbox can be replayed safely.
-- [ ] Local/Railway CPU inference parity is verified; hosted LLM calls use the configured model; generation cost/timeouts are bounded.
+- [ ] Local versus SageMaker inference parity is verified; hosted LLM calls use the configured model; generation cost/timeouts are bounded.
 - [ ] Manual URL imports run independently of uploads, respect source limits, reject unsafe destinations, expose failed/unchanged states, and trigger retained-candidate matching. Expired/stale jobs are filtered under the agreed policy.
 - [ ] Deployed artifact/version is pinned; database and index changes are compatible with the documented rollback approach.
 - [ ] Rollback is rehearsed for application/model/index changes; incompatible database migrations have an explicit recovery plan.
-- [ ] Database/bucket backup and restore are verified, worker restarts retain work, and budget controls/idle resource use are reviewed.
+- [ ] Database/bucket backup and restore are verified, worker restarts retain work, and budget controls plus idle SageMaker endpoint cost are reviewed.
 - [ ] Post-deploy smoke test succeeds using safe sample resumes; live job retrieval and explanation generation are verified without fixture substitution.
 - [ ] Release URL, tag/commit, deployment time, test evidence, known limitations, and runbook links are recorded below.
 - [ ] Demo rehearsal covers upload, ranked jobs, skill gap, grounded explanation, and a brief research comparison with clearly distinguished sample and live data.

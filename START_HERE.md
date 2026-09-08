@@ -16,10 +16,14 @@ The bootstrap has shell/health endpoints, synthetic adapters and generated contr
 - Import one posting into `career_jobs`; submit the same URL to refresh it. An unchanged import does not create duplicate events. A failed refresh preserves the previous usable version and reports the error.
 - New/changed jobs automatically match retained active candidates through durable events. Candidate users still upload one resume; no additional target-job input is required.
 - No cron, recurring scraper or site-discovery crawler is planned. Source links and last successful checks show the limits of manually maintained freshness.
-- Target Railway: Next.js, FastAPI, one CPU worker, one PostgreSQL service hosting `career_app` and `career_jobs`, plus a private bucket. Use PostgreSQL queues and stored vectors with exact retrieval for the small corpus. No AWS services or external search cluster are required.
+- Deploy Next.js, FastAPI, one CPU worker and one PostgreSQL service hosting `career_app` and `career_jobs`. Use PostgreSQL queues and stored vectors with exact retrieval for the small corpus; no external search cluster is required.
 - Keep the 70/30 semantic/required-skill formula, NLP entities/evidence, summaries, grounded explanations, five-method comparison and LDA research. See the full formula and edge cases in the plan.
 
-Railway is a proposed deployment, not something already provisioned. M3 confirms workspace access, model memory and a budget before paid setup. The $5 Hobby fee includes $5 of resource usage; usage above that and external LLM calls cost more. [Railway pricing](https://docs.railway.com/pricing/plans)
+## Infrastructure revision, 2026-09-08
+
+The team decided to use **AWS S3** for resume object storage and an **Amazon SageMaker** endpoint for NLP/embedding inference. Local filesystem and in-process CPU adapters stay behind the same ports for tests, CI and offline work, and A-07 parity is now local versus SageMaker. OpenSearch and Bedrock stay out of the MVP; retrieval remains stored vectors plus exact cosine, and explanation generation stays provider-neutral.
+
+Where web/API/worker/PostgreSQL run is still open (D07): Railway remains viable, and an AWS-native host is now possible too. Nothing is provisioned. M3 confirms an AWS account owner, region, instance type, endpoint start/stop policy and a budget before any paid setup; a SageMaker endpoint bills per hour while it exists, whether or not it serves traffic. Required environment variables are listed in `services/backend/.env.example`; no key is committed.
 
 ## Task orders
 
@@ -29,7 +33,7 @@ Each person works on a separate task branch from current main. Do not wait for P
 | --- | --- | --- | --- |
 | Plai / M1 | Review A-01 and get M3's dependency PR merged; finish A-01 review/merge | A-02 shared preprocessing/POS/NER/aliases and evidence mapping; then A-03 profile extraction and A-04 embeddings | A-05 routes, A-06 intake/profile UI, A-07 CPU packaging/parity |
 | M2 | B-09 job database/outbox; investigate B-01 single-job URL source feasibility | B-02 fixture-backed import service and isolated import UI after M3 freezes contracts; B-04 baselines; B-03 stored-vector retrieval | B-06 skills/APIs, B-10 incremental matching, B-05 advanced ranking, B-07/B-08 research |
-| M3 | Take shared-file ownership; small dependency/import-contract PRs; C-01 application persistence and durable queue | C-03 API client/routes and import access guard; C-08 event dispatch; C-02/C-04 with fixtures | C-05 integration, C-06 Railway deployment, C-07 CI/runbook; INT-01/INT-02 gates |
+| M3 / Nai | Take shared-file ownership; small dependency/import-contract PRs; C-01 application persistence, S3/SageMaker adapters and durable queue | C-03 API client/routes and import access guard; C-08 event dispatch; C-02/C-04 with fixtures | C-05 integration, C-06 deployment with S3/SageMaker, C-07 CI/runbook; INT-01/INT-02 gates |
 
 M2 alone owns `services/backend/app/db/jobs/` and `migrations/jobs/`; M3 owns `app/db/app/` and `migrations/app/`. M2 also owns the planned `apps/web/src/features/job-import/` component and its tests. M3 owns its route mounting, API client, shared UI and access guard. See [ownership](docs/integration/OWNERSHIP.md).
 
@@ -105,8 +109,8 @@ repositories and PostgreSQL-backed queues/worker lifecycle. Use fake
 resume processor and matcher adapters. Prepare C-08 event dispatch with
 both matching triggers and no browser or second-upload dependency.
 Do not edit M2 job tables/migrations or M1 resume/NLP internals. Plan
-Railway web/API/worker/PostgreSQL plus private bucket for C-06; there is no
-cron or AWS requirement. Keep paid deployment separate until budget and
+web/API/worker/PostgreSQL plus the private S3
+bucket and SageMaker endpoint for C-06; there is no cron requirement. Keep paid deployment separate until budget and
 target are agreed. Verify recovery/session boundaries; leave focused
 changes ready for review without committing or pushing.
 ```
@@ -124,4 +128,4 @@ These are acceptance steps for later implementation, not current capabilities:
 7. Re-import unchanged content, update requirements, fail a refresh, mark a job closed and restart the worker. Check no duplicates, preserved prior data and correct recovery.
 8. Reject unsafe URLs and unauthorized import requests; keep candidate data isolated.
 
-INT-02 repeats the flow on Railway with a permitted real URL and real storage/LLM adapters. Record measured cost, freshness, model memory, latency and limitations. Source coverage is the set of manually imported jobs, not a continuously monitored job market.
+INT-02 repeats the flow on the deployed host with a permitted real URL and the real S3/SageMaker/LLM adapters. Record measured cost, freshness, model memory, latency and limitations. Source coverage is the set of manually imported jobs, not a continuously monitored job market.

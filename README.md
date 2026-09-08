@@ -3,17 +3,22 @@
 A three-person NLP project. This checkout contains the SET-01 shell and initial
 SET-02 contracts, synthetic data and test doubles. Start with [plan.md](plan.md),
 [START_HERE.md](START_HERE.md) and the [bootstrap handoff](docs/integration/BOOTSTRAP_HANDOFF.md).
-Real domain integration remains assigned work. A-01 parsing is published on
-`feat/m1/a-01-resume-parsers` at `a8d4c91`, awaiting review/merge.
+Real domain integration remains assigned work. A-01 parsing is merged on `main`.
 
 ## Revised product scope
 
 Team/admin URL imports (proposed access rule) maintain jobs in `career_jobs`;
 re-import a URL to update it. New/changed jobs automatically match retained
 candidates in `career_app`, while candidates still need only one resume.
-No scheduled scraping is required. Railway is the proposed target for web,
-API, a CPU worker, one PostgreSQL service with two databases, and a private
-bucket. Stored vectors and PostgreSQL queues keep the service count small.
+No scheduled scraping is required. The deployment target is web, API, a CPU
+worker and one PostgreSQL service with two databases, plus a private **AWS S3**
+bucket for resume originals and an **Amazon SageMaker** endpoint for NLP/embedding
+inference (team revision 2026-09-08). Local filesystem and in-process CPU adapters
+stay behind the same ports for tests and offline work, so no AWS credentials are
+needed for the default mock mode. OpenSearch and Bedrock stay out of the MVP:
+stored vectors and PostgreSQL queues keep the service count small, and the
+explanation LLM stays provider-neutral. Where the application itself runs is still
+open (D07).
 See [architecture and costs](plan.md#2-proposed-architecture-and-technology-stack).
 The import UI/API, real adapters and deployment are not implemented by this
 scope revision; production mode remains intentionally disabled in the bootstrap.
@@ -58,6 +63,15 @@ copying an environment file. To customize them, copy `apps/web/.env.example` to
 `apps/web/.env.local` or `services/backend/.env.example` to
 `services/backend/.env`. Use PowerShell `Copy-Item` or POSIX `cp`.
 Keep backend secrets out of variables prefixed with `NEXT_PUBLIC_`.
+
+`services/backend/.env.example` lists every variable the AWS revision needs:
+`OBJECT_STORE_BACKEND`/`RESUME_BUCKET`/`AWS_REGION` for S3, and
+`EMBEDDING_BACKEND`/`SAGEMAKER_EMBEDDING_ENDPOINT` for the inference endpoint.
+Both default to their local adapters, so **no AWS key is required to run or test
+this checkout**. Credentials come from an instance/task role, a named
+`AWS_PROFILE`, or the standard `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`
+variables read by boto3 — never from a committed file, and never from a
+`NEXT_PUBLIC_` variable.
 
 ## What runs now
 
@@ -197,8 +211,9 @@ CI repeats code, fixture, schema/type drift and database checks on pushes/PRs.
 - **Plai / M1:** finish A-01 review/merge, then start A-02 shared NLP.
 - **M2:** start B-09 in `feat/m2/b-09-job-database`; investigate permitted sources
   for single-URL imports in B-01. JobThai/JobsDB are candidate sources, not approved integrations.
-- **M3:** start C-01 in `feat/m3/c-01-app-persistence`; take custody of shared
-  config/contracts and route wiring; coordinate A-01 dependencies and new import DTOs.
+- **M3 / Nai:** C-01 application persistence and the S3/SageMaker adapters; take
+  custody of shared config/contracts and route wiring; A-01 parser dependencies
+  are already promoted into the backend manifest and lockfile.
 
 Use the [ownership map](docs/integration/OWNERSHIP.md) and teammate prompts in
 START_HERE.md. M3 alone updates shared manifests, generated contracts, CI and the
