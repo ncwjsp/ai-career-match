@@ -14,8 +14,8 @@ models, match jobs, store files or implement the upload API.
 From `services/backend`:
 
 ```bash
-uv run --locked --with-requirements ../../docs/resume/requirements-a01.txt pytest tests/resume -q
-uv run --locked --with-requirements ../../docs/resume/requirements-a01.txt pytest
+uv run --locked pytest tests/resume -q
+uv run --locked pytest
 uv run --locked ruff check app/modules/resume tests/resume
 uv run --locked ruff format --check app/modules/resume tests/resume
 ```
@@ -25,10 +25,10 @@ upstream test-client deprecation warnings. Lint and formatting pass.
 Tests construct small, real PDF/DOCX byte streams in memory. No personal resumes,
 network services, AWS, PostgreSQL, Word installation or model download is needed.
 
-The requirement file pins `pypdf==6.17.0` and `defusedxml==0.7.1`. It is a
-temporary A-01 dependency handoff, not a replacement shared lockfile. M3 must add
-these to the backend manifest and lockfile before merging this feature into a
-fresh CI environment. Tests do not silently skip missing parser dependencies.
+`pypdf==6.17.0` and `defusedxml==0.7.1` were promoted by M3 into
+`services/backend/pyproject.toml` and `uv.lock`, so `uv sync --locked` now
+installs them and the temporary `docs/resume/requirements-a01.txt` handoff file
+was removed. Tests do not silently skip missing parser dependencies.
 See [M3 handoff](M3_HANDOFF.md).
 
 ## Entry point

@@ -12,6 +12,9 @@ dependencies = [
   "sqlalchemy==2.0.52",
   "alembic==1.19.2",
   "psycopg[binary]==3.3.5",
+  # A-01 resume parsing (promoted from docs/resume/requirements-a01.txt by M3).
+  "pypdf==6.17.0",
+  "defusedxml==0.7.1",
 ]
 
 [dependency-groups]

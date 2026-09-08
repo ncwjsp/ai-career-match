@@ -1,3 +1,0 @@
-# Temporary A-01 test/runtime requirements; M3 promotes these to pyproject.toml and uv.lock.
-pypdf==6.17.0
-defusedxml==0.7.1
