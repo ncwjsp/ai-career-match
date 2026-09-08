@@ -77,17 +77,26 @@ variables read by boto3 — never from a committed file, and never from a
 
 | Surface | Current behavior |
 | --- | --- |
-| Web home | Responsive project shell, with upload/recommendations visibly unavailable |
+| Web home | Responsive project shell; resume upload is visibly unavailable |
+| `/recommendations/<candidate id>` | Ranked jobs and job detail. Shows a documented empty state until B-06's recommendations endpoint exists |
 | `GET /health/live` | Process health |
-| `GET /health/ready` | Mock readiness; explicitly says external dependencies are not required |
+| `GET /health/ready` | Reports the mode and, in real mode, which adapters the deployment reaches |
 | `GET /dev/fixtures` | Read-only synthetic profile, jobs, scores, events and explanation |
-| `/api/v1/*` | Documented contracts; valid requests return structured **501** until owners implement them |
+| `.../jobs/{job_id}/explanation` | **Implemented** (C-02): candidate-scoped, cached per revision, validated against the computed evidence |
+| `/api/v1/*` (upload, profile, jobs, recommendations) | Documented contracts; valid requests return structured **501** until A-05/B-06 implement them |
 | Invalid planned requests | Structured **422** |
-| `APP_ENV=production` | Startup fails intentionally; authentication and real adapters are not implemented |
+| `APP_ENV=production` | Startup fails unless `APP_MODE=real` with S3, SageMaker and a real LLM provider configured |
 
 No user-facing upload flow is implemented. Do not use real resumes with this
-bootstrap. Fixture scores are predetermined values, and the explanation is fixed
-text. The API is a local development service.
+checkout. Fixture scores are predetermined values, and the default explanation
+generator is a deterministic offline stand-in. The API is a local development
+service.
+
+`career_app` persistence, the durable queue, the job-change dispatcher and
+incremental matching are implemented and tested (C-01/C-08), so a newly imported
+job refreshes a retained candidate with no second upload. Real ranking still
+needs M2's matcher: the worker entry point refuses to start without it rather
+than publishing synthetic scores.
 
 From `services/backend`, demonstrate both matching triggers:
 
@@ -192,6 +201,10 @@ uv run pytest
 uv run python -m scripts.export_openapi --check
 uv run python -m scripts.demo_handoff
 ```
+
+Deployment preparation, the AWS S3/SageMaker setup, IAM scoping, cost attention
+and rollback are in [docs/integration/DEPLOYMENT.md](docs/integration/DEPLOYMENT.md).
+Nothing there is provisioned.
 
 From `apps/web`:
 

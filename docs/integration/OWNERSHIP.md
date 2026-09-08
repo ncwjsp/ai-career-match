@@ -15,7 +15,7 @@ migration chain. Do not edit another member's folders while developing a feature
 The public DTOs belong to contracts; domain implementations belong to their owners.
 
 
-M3 also owns app/testing, scripts, tests/core, tests/contracts, and the generated API files. M2 requests shared infrastructure/CI changes through M3; M1/M2 do not edit shared dependency manifests concurrently. All backend paths above are relative to services/backend, and web paths to apps/web/src.
+M3 also owns app/testing, scripts, tests/conftest.py, tests/core, tests/contracts, tests/app (career_app persistence), and the generated API files. M2 requests shared infrastructure/CI changes through M3; M1/M2 do not edit shared dependency manifests concurrently. All backend paths above are relative to services/backend, and web paths to apps/web/src.
 
 ## Manual import and infrastructure coordination
 
