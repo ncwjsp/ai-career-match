@@ -7,11 +7,12 @@ from fastapi.responses import JSONResponse
 from app.api.planned import PlannedFeatureError
 from app.api.router import router
 from app.contracts.models import ErrorDetail, ErrorResponse
+from app.core.container import Container
 from app.core.errors import AppError
 from app.core.settings import Settings
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(settings: Settings | None = None, container: Container | None = None) -> FastAPI:
     config = settings or Settings()
     config.validate_for_runtime()
     application = FastAPI(
@@ -23,6 +24,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         ),
     )
     application.state.settings = config
+    application.state.container = container or Container(settings=config)
     application.include_router(router)
 
     def error_response(code: str, message: str, status: int, retryable: bool = False):

@@ -1,4 +1,7 @@
-"""Public v1 contracts. Every handler remains explicitly unimplemented."""
+"""Public v1 contracts still owned by M1/M2. Each handler is explicitly
+unimplemented: uploads and the profile read belong to A-05, and the jobs and
+recommendations reads belong to B-06. M3 implements the explanation routes in
+app/modules/explanations/router.py."""
 
 from typing import Annotated, NoReturn
 
@@ -9,7 +12,6 @@ from app.contracts.models import (
     CandidateProfile,
     ErrorResponse,
     JobPosting,
-    MatchExplanation,
     RecommendationSet,
     UploadAccepted,
 )
@@ -59,14 +61,4 @@ def job_detail(job_id: str):
     not_implemented()
 
 
-EXPLANATION_PATH = "/candidates/{candidate_id}/recommendations/{revision}/jobs/{job_id}/explanation"
-
-
-@router.post(EXPLANATION_PATH, response_model=MatchExplanation, status_code=202)
-def request_explanation(candidate_id: str, revision: int, job_id: str):
-    not_implemented()
-
-
-@router.get(EXPLANATION_PATH, response_model=MatchExplanation)
-def explanation_status(candidate_id: str, revision: int, job_id: str):
-    not_implemented()
+# The explanation routes are implemented in app/modules/explanations/router.py.

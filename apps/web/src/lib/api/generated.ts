@@ -41,10 +41,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Explanation Status */
+        /**
+         * Explanation Status
+         * @description Read a generated explanation without triggering generation.
+         */
         get: operations["explanation_status_api_v1_candidates__candidate_id__recommendations__revision__jobs__job_id__explanation_get"];
         put?: never;
-        /** Request Explanation */
+        /**
+         * Request Explanation
+         * @description Generate (or return the cached) explanation for one ranked job.
+         */
         post: operations["request_explanation_api_v1_candidates__candidate_id__recommendations__revision__jobs__job_id__explanation_post"];
         delete?: never;
         options?: never;
@@ -337,6 +343,11 @@ export interface components {
             /** Profiles */
             profiles: components["schemas"]["CandidateProfile"][];
             recommendations: components["schemas"]["RecommendationSet"];
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
         };
         /** JobChangeEvent */
         JobChangeEvent: {
@@ -718,6 +729,19 @@ export interface components {
             /** Status Url */
             status_url: string;
         };
+        /** ValidationError */
+        ValidationError: {
+            /** Context */
+            ctx?: Record<string, never>;
+            /** Input */
+            input?: unknown;
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -829,8 +853,8 @@ export interface operations {
                     "application/json": components["schemas"]["MatchExplanation"];
                 };
             };
-            /** @description Invalid request. */
-            422: {
+            /** @description Not this session's candidate. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -838,13 +862,22 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
-            /** @description Planned feature; not implemented. */
-            501: {
+            /** @description Unknown revision or job. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -871,8 +904,8 @@ export interface operations {
                     "application/json": components["schemas"]["MatchExplanation"];
                 };
             };
-            /** @description Invalid request. */
-            422: {
+            /** @description Not this session's candidate. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -880,13 +913,22 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
-            /** @description Planned feature; not implemented. */
-            501: {
+            /** @description Unknown revision or job. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
