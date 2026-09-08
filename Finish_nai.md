@@ -94,15 +94,16 @@ only in a temporary handoff file**, so `uv sync --locked` could not run
 
 | Check | Result |
 | --- | --- |
-| `pytest` (backend) | **256 passed**, 2 pre-existing upstream deprecation warnings |
+| `pytest` (backend) | **257 passed**, 2 pre-existing upstream deprecation warnings |
 | `ruff check .` / `ruff format --check .` | pass |
 | `scripts.export_openapi --check` | snapshot current |
 | `next build`, `tsc --noEmit`, `eslint .`, `api-types --check` | pass |
 
-Test counts by area I added: 34 core (settings/storage/inference/access/worker
-entry), 56 `tests/app` (schema, sessions, profiles, matches, analyses, queue),
-25 `tests/integration` (C-08 refresh flow + explanation API), 21
-`tests/explanations`.
+Test counts by area: 43 `tests/core` (settings, storage, inference, access,
+worker entry, health, migrations), 56 `tests/app` (schema, sessions, profiles,
+matches, analyses, queue), 32 `tests/integration` (C-08 refresh flow and the
+explanation API), 21 `tests/explanations`, plus the existing 20 contracts,
+27 jobs and 58 resume tests, which still pass.
 
 **Honest limits on that evidence:**
 - Tests run against **SQLite**, not PostgreSQL — no Docker daemon here. The
