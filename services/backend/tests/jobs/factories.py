@@ -38,6 +38,8 @@ def make_job(
     active: bool = True,
     expires_at: datetime | None = None,
     fetched_at: datetime = NOW,
+    requirements: list[JobRequirement] | None = None,
+    other_requirements: list[str] | None = None,
 ) -> JobPosting:
     return JobPosting(
         job_id=job_id,
@@ -48,8 +50,8 @@ def make_job(
         company="Example Labs",
         description="Required skills: Python.",
         summary=None,
-        requirements=[requirement()],
-        other_requirements=[],
+        requirements=requirements if requirements is not None else [requirement()],
+        other_requirements=other_requirements or [],
         evidence=[evidence()],
         language="en",
         fetched_at=fetched_at,
