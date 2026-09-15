@@ -2,13 +2,15 @@
 
 This sandboxed session's network egress to external job/career sites is
 blocked by organization policy (see docs/job-sources/REGISTER.md for how that
-was confirmed) -- so B-01's live checks could not be completed here. Run this
-from a machine with normal network access to do them in one command instead
-of by hand:
+was confirmed) -- so B-01's live checks could not be completed here; they
+were later completed by a teammate on a machine with normal network access,
+which is how job-boards.greenhouse.io became the first approved source (see
+docs/job-sources/REGISTER.md). Run this the same way to check another
+candidate:
 
-    uv run python -m app.modules.jobs.sources.verify_cli https://boards.greenhouse.io \
+    uv run python -m app.modules.jobs.sources.verify_cli https://job-boards.greenhouse.io \
         --path /some-company/jobs/123 \
-        --fetch-sample https://boards.greenhouse.io/some-company/jobs/123
+        --fetch-sample https://job-boards.greenhouse.io/some-company/jobs/123
 
 It fetches and prints the host's live robots.txt, evaluates it for one path
 via robots.py, and (with --fetch-sample) attempts the one real retrieval

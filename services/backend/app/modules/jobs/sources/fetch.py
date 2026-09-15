@@ -7,8 +7,7 @@ passed in as `allowed_hosts` -- a closed allow-list, checked before any
 request is made -- over HTTPS, with a bounded size and timeout. B-02
 generalizes this into the manual-import flow's full safety requirements once
 a source is actually approved; see docs/job-sources/REGISTER.md for which
-one that is (as of this writing: none yet -- live verification is blocked in
-the environment this was written in, see that file).
+one that is (as of this writing: job-boards.greenhouse.io).
 
 Uses the standard library only (`urllib.request`). `httpx` is already a
 dev-only test dependency, but promoting it to a runtime dependency for one
