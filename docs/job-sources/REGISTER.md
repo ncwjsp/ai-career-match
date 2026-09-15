@@ -66,3 +66,25 @@ Once a source clears live verification: add its host to the allow-list this
 function is called with, note the evidence (dated `robots.txt`/ToS excerpt,
 successful retrieval) in a new row here promoted from the candidates table
 above, and this file's "no source is approved yet" line stops being true.
+
+## Doing the live verification from a machine with normal network access
+
+`app/modules/jobs/sources/verify_cli.py` turns "fetch robots.txt, read it,
+try one retrieval" into one command instead of doing it by hand — run it from
+anywhere that isn't this sandbox:
+
+```bash
+cd services/backend
+uv run python -m app.modules.jobs.sources.verify_cli https://boards.greenhouse.io \
+  --path /<company>/jobs/<id> \
+  --fetch-sample https://boards.greenhouse.io/<company>/jobs/<id>
+```
+
+It prints the live `robots.txt`, evaluates whether the given path is allowed
+(`app/modules/jobs/sources/robots.py`), and — with `--fetch-sample` — performs
+the one real retrieval this file's acceptance bar asks for, printing the
+status/content-type/size as evidence to paste into a new row above. It
+deliberately does **not** read or evaluate Terms of Service; the tool's own
+output says so, because robots.txt permission and ToS permission are
+different questions and only a human can answer the second one.
+
