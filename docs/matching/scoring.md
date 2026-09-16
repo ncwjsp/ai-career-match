@@ -120,6 +120,39 @@ tie-break before rounding for display (`app/orchestration/refresh.py`), so two
 jobs that round to the same displayed percentage still have a deterministic
 order.
 
+## Hybrid re-ranking (`hybrid-weighted-v1`, B-05)
+
+`app/modules/matching/hybrid.py` is a separate, separately-versioned formula
+from `semantic-skills-v1` above — not a replacement for it. Given a pool of
+jobs for one profile, `rerank()`:
+
+1. **Bounds the pool.** Scores every job with the bi-encoder alone (cheap:
+   `O(1)` per pair once an embedding client exists) and keeps only the top
+   `candidate_pool_size`.
+2. **Re-ranks the bounded pool** by a weighted combination of all three
+   existing baselines — keyword, TF-IDF, bi-encoder — not the coarse score
+   alone:
+
+   ```text
+   combined = (w_keyword * keyword + w_tfidf * tfidf + w_bi_encoder * bi_encoder)
+              / (w_keyword + w_tfidf + w_bi_encoder)
+   ```
+
+   Weights are a `HybridWeights` dataclass (default 0.2/0.3/0.5), tunable per
+   call; each `HybridScore` carries its three component scores plus
+   `hybrid_version` so a later weight change is distinguishable from an old
+   stored result, the same "versioned score components" property
+   `ScoreComponents` gives `semantic-skills-v1` above. Ties (equal combined
+   score) break on `job_id`, so ordering is always deterministic.
+
+**Transformer pair (cross-encoder) matching — the other half of B-05 — is
+still blocked.** `app/modules/matching/cross_encoder.py` does not exist:
+unlike the three pure-Python baselines above, a cross-encoder needs a real
+ML runtime dependency, which is a shared-manifest change requiring M3
+coordination, not something addable unilaterally. `HybridWeights` leaves
+room for a fourth weighted term once that dependency lands; nothing about
+`rerank()`'s public shape should need to change to add it.
+
 ## Known limitations (honest, not yet fixed)
 
 - The `partial` rubric is a plain substring match, not NLP: it will both
