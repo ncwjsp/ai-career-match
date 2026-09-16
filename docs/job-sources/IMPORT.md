@@ -60,6 +60,27 @@ schema with a fake HTTP transport (`tests/jobs/test_ingest.py`,
 `test_normalize.py`, `test_html_text.py`, `test_summary.py`) -- no real
 network, no new dependency.
 
+## Running one real import (no router needed)
+
+`app/modules/jobs/import_cli.py` is `verify_cli.py`'s counterpart for
+actually persisting a posting, not just checking one is fetchable. This
+sandboxed session's network egress to job/career sites is blocked (same as
+B-01), so run it from a machine with normal network access:
+
+```bash
+cd services/backend
+JOB_DATABASE_URL=sqlite:///career_jobs.sqlite uv run alembic -c alembic-jobs.ini upgrade head
+JOB_DATABASE_URL=sqlite:///career_jobs.sqlite uv run python -m app.modules.jobs.import_cli \
+  https://job-boards.greenhouse.io/<company>/jobs/<id>
+```
+
+It registers "greenhouse" as a `job_sources` row (idempotent), then calls
+`JobIngestionService.import_url()` against the real network and prints the
+resulting `IngestionReport`. `JOB_DATABASE_URL` can point at a real
+PostgreSQL `career_jobs` instead once one exists -- nothing here is
+SQLite-specific. This is the way to build B-07's real job corpus: each
+successful run adds one genuinely-fetched posting, not a fixture.
+
 ## What is deliberately not built yet: the router
 
 `docs/integration/OWNERSHIP.md` and plan.md section 3 both say the import
