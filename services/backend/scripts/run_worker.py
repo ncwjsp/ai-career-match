@@ -15,15 +15,17 @@ from __future__ import annotations
 import logging
 import signal
 import sys
+import time
 
 from app.core.container import Container
 from app.core.settings import Settings
+from app.modules.resume.worker import ResumeWorker
 from app.orchestration.worker import MatchWorker
 
 logger = logging.getLogger("worker")
 
 
-def load_matcher():
+def load_matcher(container=None):
     """Import M2's matcher, or explain precisely what is missing."""
     try:
         from app.modules.matching.scoring import Matcher  # type: ignore[attr-defined]
@@ -34,6 +36,10 @@ def load_matcher():
             "scorer, because published scores must not be synthetic.\n"
             f"Import error: {error}"
         ) from error
+    if container is not None:
+        return Matcher(
+            container.embedding_client, container.clock, preprocessing_version="shared-text-v1"
+        )
     return Matcher()
 
 
@@ -41,10 +47,15 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     settings = Settings()
     settings.validate_for_runtime()
+    if settings.embedding_backend == "local":
+        raise SystemExit(
+            "The worker requires EMBEDDING_BACKEND=cpu or sagemaker; "
+            "hash fixtures cannot publish scores."
+        )
     container = Container(settings=settings)
     worker = MatchWorker(
         container.match_queue,
-        container.match_service(load_matcher()),
+        container.match_service(load_matcher(container)),
         container.clock,
         container.dispatcher,
     )
@@ -60,7 +71,13 @@ def main() -> int:
     signal.signal(signal.SIGINT, stop)
 
     logger.info("Worker started in %s mode.", settings.app_mode)
-    worker.run_forever(should_stop=lambda: stopping)
+    resume_worker = ResumeWorker(container)
+    worker.recover()
+    while not stopping:
+        resume_work = resume_worker.step()
+        match_work = worker.step()
+        if not resume_work and not match_work:
+            time.sleep(1)
     logger.info("Worker stopped cleanly.")
     return 0
 

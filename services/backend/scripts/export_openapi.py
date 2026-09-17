@@ -17,7 +17,9 @@ def main() -> None:
         if path.startswith("/api/v1/"):
             for operation in item.values():
                 if isinstance(operation, dict):
-                    operation["x-implementation-status"] = "planned"
+                    operation["x-implementation-status"] = (
+                        "planned" if "planned" in operation.get("tags", []) else "implemented"
+                    )
     expected = json.dumps(schema, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
     output = Path(__file__).resolve().parents[3] / "contracts/openapi.json"
     if args.check:

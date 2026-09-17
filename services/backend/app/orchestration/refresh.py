@@ -56,7 +56,11 @@ class RecommendationPublisher:
 
         ranked = self._rank(candidate_id, profile.profile_version, now)
         latest = self._recommendations.latest(candidate_id)
-        if latest is not None and _same_ranking(latest, ranked):
+        if (
+            latest is not None
+            and latest.profile_version == profile.profile_version
+            and _same_ranking(latest, ranked)
+        ):
             return None  # Nothing changed for this candidate; do not churn revisions.
 
         revision = self._recommendations.next_revision(candidate_id)
