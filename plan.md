@@ -16,6 +16,8 @@
 
 ## 1. Source of truth and current repository
 
+
+
 This plan is based on all 10 slides, their speaker notes, and all 5 pages of the speaker script. References below use **S1-S10** for presentation slides and **P1-P5** for script pages.
 
 - **Presentation:** `AI_Career_Match_Presentation.pptx`, supplied at `C:/Users/User/Downloads/AI_Career_Match_Presentation.pptx`.
@@ -649,3 +651,13 @@ M3 coordinates this checklist; the responsible member supplies evidence and chec
 | M1 domain sign-off | Pending |
 | M2 domain sign-off | Pending |
 | M3 integration sign-off | Pending |
+
+### M1 completion validation, 2026-09-17
+
+Code commit `581cbef` on `feat/m1/complete-resume-pipeline` passed
+[GitHub CI: backend, frontend and databases](https://github.com/ncwjsp/ai-career-match/actions/runs/35248430957).
+Local full backend suite with the real CPU artifact: 517 passed; browser suite: 3 passed.
+CI verifies PostgreSQL role isolation and both independent migration chains, while the
+application behavior tests use SQLite. A-04–A-07 implementation awaits review/merge;
+live S3/SageMaker, multi-worker concurrency, hosting/retention decisions and M2's
+retrieval/research acceptance remain explicit gates. See Finish_plai.md.

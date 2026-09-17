@@ -160,7 +160,7 @@ docker compose --env-file .env -f infra/compose.yaml stop
 
 **Verified locally on 2026-09-07:** both databases start, each owner connects only
 to its own database, and both Alembic upgrade commands pass. That historical bootstrap check preceded the domain migrations now on main.
-CI includes these checks; GitHub run results have not been verified here.
+Current domain migrations and database isolation also pass in [GitHub CI](https://github.com/ncwjsp/ai-career-match/actions/runs/35248430957) on code commit `581cbef`.
 
 This checkout uses **127.0.0.1:15432** because Windows rejected binding port 5432
 with error 10013. Root `.env` and `services/backend/.env` are aligned to 15432;

@@ -54,17 +54,24 @@ matcher and an explicitly simulated import failure.
   access, parked retries, ownership of expired leases, transactional intake rollback,
   upload-to-ready with an empty corpus, and new-job refresh without parsing again.
 
+### GitHub CI confirmed
+
+[Run 35248430957](https://github.com/ncwjsp/ai-career-match/actions/runs/35248430957)
+passed on code commit `581cbef`: backend, frontend (including all three browser tests),
+and PostgreSQL database role/isolation/migration checks. This validates Linux installation
+and both migration chains; it does not prove multi-worker concurrency or live AWS behavior.
+
 ### Limits that remain
 
 Docker Desktop's engine was unavailable in this run even after attempting startup; the
 application tests use SQLite. **PostgreSQL concurrency is not established by those tests.**
-CI's two-database job must pass and staging must check multiple claimants before replicas.
+CI's two-database job now passes; staging must still check multiple claimants before replicas.
 No real resume, AWS credential, S3 bucket, SageMaker endpoint or approved paid resource
 was used. No cloud deployment is claimed. Hosting choice, budget, retention confirmation,
 live S3/SageMaker verification and operations/orphan cleanup remain shared release gates.
 Public CI diagnostics identified the installation blocker: pinned uv could not find Python
 3.12.14 in its managed-download list. CI now explicitly installs that exact Python using
-actions/setup-python before uv sync. Check the latest branch CI result for confirmation.
+actions/setup-python before uv sync. The code commit's successful CI result is linked above.
 
 ## M2 can continue now
 
