@@ -39,6 +39,8 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:resume
   databases:
     runs-on: ubuntu-latest
     steps:
@@ -60,7 +62,7 @@ jobs:
           uv run alembic -c alembic-jobs.ini upgrade head
       - name: Database logs
         if: failure()
-        run: docker compose --env-file .env -f infra/compose.yaml logs --no-color
+        run: if [ -f .env ]; then docker compose --env-file .env -f infra/compose.yaml logs --no-color; fi
       - name: Stop CI services
         if: always()
-        run: docker compose --env-file .env -f infra/compose.yaml down
+        run: if [ -f .env ]; then docker compose --env-file .env -f infra/compose.yaml down; fi

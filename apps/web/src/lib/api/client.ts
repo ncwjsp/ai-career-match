@@ -10,6 +10,17 @@ export type MatchExplanation = components["schemas"]["MatchExplanation"];
 export type SkillComparison = components["schemas"]["SkillComparison"];
 export type AnalysisRun = components["schemas"]["AnalysisRun"];
 export type ErrorResponse = components["schemas"]["ErrorResponse"];
+export type UploadAccepted = components["schemas"]["UploadAccepted"];
+
+export function uploadResume(file: File): Promise<UploadAccepted> {
+  const body = new FormData();
+  body.append("file", file);
+  return request<UploadAccepted>("/api/v1/resumes", { method: "POST", body });
+}
+
+export function getProfile(resumeId: string): Promise<CandidateProfile> {
+  return request<CandidateProfile>(`/api/v1/resumes/${encodeURIComponent(resumeId)}/profile`);
+}
 
 /**
  * One transport for every backend call.

@@ -12,7 +12,7 @@
 
 **Navigation:** [Scope](#1-source-of-truth-and-current-repository) | [Architecture](#2-proposed-architecture-and-technology-stack) | [Contracts](#3-contracts-that-allow-parallel-implementation) | [Member assignments](#4-responsibilities-for-the-three-members) | [Coordination](#5-shared-work-and-coordination-rules) | [Milestones](#6-development-phases-and-milestones) | [Git workflow](#7-git-and-github-workflow) | [Testing](#8-testing-and-validation) | [Progress tracker](#9-project-progress-tracker) | [Release checklist](#10-final-integration-and-deployment-checklist)
 
-**Start here, Plai:** review/merge A-01, then start A-02. M2 can start B-09 and investigate B-01 now; M3 takes shared contracts and C-01. See [START_HERE.md](START_HERE.md) for updated task orders and prompts. The existing remote is [ncwjsp/ai-career-match](https://github.com/ncwjsp/ai-career-match); do not recreate the bootstrap or remote.
+**Current M1 checkpoint (2026-09-17):** A-01–A-03 are merged; A-04–A-07 implementation is on `feat/m1/complete-resume-pipeline`. See [Finish_plai.md](Finish_plai.md) for tests, shared review and live-cloud gates. M2 continues stored retrieval and research; do not recreate completed work.
 
 ## 1. Source of truth and current repository
 
@@ -518,13 +518,13 @@ Status reflects inspected local Git history and recorded validation. Bootstrap c
 
 | Task/feature | Assigned member | Status | Dependencies | Notes | Completion |
 | --- | --- | --- | --- | --- | --- |
-| A-01 - Resume file validation and PDF/Word extraction | M1 | In Progress | SET-02; SET-03 format decision | Published feature commit `a8d4c91`; recorded 58 parser tests / 90 total passed on that branch. Review/merge and M3 shared parser dependencies remain; implementation is not on main yet. | -- |
-| A-02 - Shared preprocessing, POS/NER, aliases, evidence | M1 | Not Started | SET-02; SET-03 language decision | Early versioned handoff to M2. | 0% |
-| A-03 - Candidate entities, experience, projects, summary | M1 | Not Started | A-01; A-02 | Cover all R03 entities and unknown values. | 0% |
-| A-04 - Shared embedding adapter and model versioning | M1 | Not Started | A-02; SET-03 | Publish dimension/revision and test vectors. | 0% |
-| A-05 - Upload/profile API and backend adapters | M1 | Not Started | A-03; SET-02; C-01 for real persistence | Use fake queue/storage while C-01 develops. | 0% |
-| A-06 - Upload, processing, profile and summary UI | M1 | Not Started | SET-02; C-03 client/component interfaces | Develop from fixtures before A-05 is live. | 0% |
-| A-07 - CPU model packaging, offline lifecycle and parity | M1 | Not Started | A-04; SET-03; B-08 for final model selection | Start baseline packaging early; document fine-tuning decision. | 0% |
+| A-01 - Resume file validation and PDF/Word extraction | M1 | Done | SET-02; SET-03 format decision | Merged PDF/DOCX extraction and evidence handling; parser regression suite retained. | 100% |
+| A-02 - Shared preprocessing, POS/NER, aliases, evidence | M1 | Done | SET-02; SET-03 language decision | Merged shared English NLP; pinned dependencies promoted into the shared lock in M1 completion branch. | 100% |
+| A-03 - Candidate entities, experience, projects, summary | M1 | Done | A-01; A-02 | Merged conservative profile facts, summary and union-of-period experience calculation. | 100% |
+| A-04 - Shared embedding adapter and model versioning | M1 | In Progress | A-02; SET-03 | Implemented on feat/m1/complete-resume-pipeline: versioned embeddings, pinned artifacts, bounded token chunks and CPU/endpoint tests. Awaiting review/merge. | 90% |
+| A-05 - Upload/profile API and backend adapters | M1 | In Progress | A-03; SET-02; C-01 for real persistence | Implemented upload/status/profile API, durable intake and worker/event wiring; synthetic API/queue tests pass. PostgreSQL/live S3 validation and review remain. | 90% |
+| A-06 - Upload, processing, profile and summary UI | M1 | In Progress | SET-02; C-03 client/component interfaces | Implemented upload/progress/profile/evidence UI and reload link; 3 browser tests and production build pass. Awaiting review/merge. | 90% |
+| A-07 - CPU model packaging, offline lifecycle and parity | M1 | In Progress | A-04; SET-03; B-08 for final model selection | Pinned CPU package and SageMaker protocol implemented; real local model/HTTP parity measured. Live SageMaker/target-instance validation and final B-08 model selection remain. | 80% |
 
 ### Member 2
 
