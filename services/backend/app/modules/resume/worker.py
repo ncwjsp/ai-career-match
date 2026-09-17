@@ -200,9 +200,4 @@ class ResumeWorker:
                         analysis_id,
                         "ready",
                         result_count=len(recommendations.results),
-                        corpus_snapshot=(
-                            recommendations.results[0].index_version
-                            if recommendations.results
-                            else "empty-corpus"
-                        ),
                     )

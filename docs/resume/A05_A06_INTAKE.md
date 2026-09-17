@@ -32,7 +32,8 @@ concurrency on PostgreSQL before adding worker replicas; SQLite tests do not pro
 The frontend exports `ResumeUpload`, `AnalysisProgress` and `ProfileView`. The home page
 mounts upload; `/analysis/{id}?resume=...&candidate=...` can be reloaded in the same session.
 It shows real stages, actionable errors, profile facts, unknowns, warnings and evidence,
-then links to M3's recommendations page. No invented percentage progress or scores.
+then links to M3's recommendations page. `corpus_snapshot` stays unknown until M2 supplies
+a real corpus snapshot identifier; an index-version label is not substituted. No invented percentage progress or scores.
 The file remains selected after upload failure so the user can retry. Only opaque IDs
 appear in the reload link; it confers no access without the cookie.
 

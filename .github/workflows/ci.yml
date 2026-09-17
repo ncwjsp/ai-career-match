@@ -16,7 +16,19 @@ jobs:
         with:
           version: "0.12.2"
           python-version: "3.12.14"
-      - run: uv sync --locked
+      - name: Install locked backend dependencies
+        run: |
+          python - <<'PY'
+          import subprocess
+          result = subprocess.run(['uv', 'sync', '--locked'], capture_output=True, text=True)
+          output = result.stdout + result.stderr
+          print(output)
+          if result.returncode:
+              # Public package install only; no secret values are passed to this step.
+              diagnostic = output[-12000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print('::error title=Locked dependency installation::' + diagnostic)
+          raise SystemExit(result.returncode)
+          PY
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest
@@ -49,7 +61,19 @@ jobs:
         with:
           version: "0.12.2"
           python-version: "3.12.14"
-      - run: uv sync --project services/backend --locked
+      - name: Install locked backend dependencies
+        run: |
+          python - <<'PY'
+          import subprocess
+          result = subprocess.run(['uv', 'sync', '--project', 'services/backend', '--locked'], capture_output=True, text=True)
+          output = result.stdout + result.stderr
+          print(output)
+          if result.returncode:
+              # Public package install only; no secret values are passed to this step.
+              diagnostic = output[-12000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print('::error title=Locked dependency installation::' + diagnostic)
+          raise SystemExit(result.returncode)
+          PY
       - name: Start the two local databases
         run: |
           cp .env.example .env
