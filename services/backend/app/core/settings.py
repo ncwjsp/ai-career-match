@@ -40,7 +40,8 @@ class Settings(BaseSettings):
     aws_s3_endpoint_url: str = ""
 
     # NLP/embedding inference (team revision 2026-09-08: Amazon SageMaker).
-    embedding_backend: Literal["local", "sagemaker"] = "local"
+    embedding_backend: Literal["local", "cpu", "sagemaker"] = "local"
+    embedding_model_dir: str = ".models/resume"
     sagemaker_embedding_endpoint: str = ""
     sagemaker_region: str = ""
     sagemaker_timeout_seconds: int = 30
