@@ -62,8 +62,9 @@ CI's two-database job must pass and staging must check multiple claimants before
 No real resume, AWS credential, S3 bucket, SageMaker endpoint or approved paid resource
 was used. No cloud deployment is claimed. Hosting choice, budget, retention confirmation,
 live S3/SageMaker verification and operations/orphan cleanup remain shared release gates.
-An earlier CI installation failure could not be diagnosed from its restricted log; use
-the new branch CI result rather than assuming that historical failure was fixed.
+Public CI diagnostics identified the installation blocker: pinned uv could not find Python
+3.12.14 in its managed-download list. CI now explicitly installs that exact Python using
+actions/setup-python before uv sync. Check the latest branch CI result for confirmation.
 
 ## M2 can continue now
 
