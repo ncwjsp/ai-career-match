@@ -54,7 +54,8 @@ SOURCE_ID = "greenhouse"
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "url", help="An approved posting URL, e.g. https://job-boards.greenhouse.io/<company>/jobs/<id>"
+        "url",
+        help="An approved posting URL, e.g. https://job-boards.greenhouse.io/<company>/jobs/<id>",
     )
     args = parser.parse_args(argv)
 
