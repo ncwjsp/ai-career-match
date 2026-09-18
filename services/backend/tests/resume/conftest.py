@@ -1,18 +1,55 @@
 """Small synthetic documents built in memory; no private files, network or office software."""
 
+import os
 from io import BytesIO
+from uuid import uuid4
 from xml.sax.saxutils import escape
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import pytest
+from alembic import command
+from alembic.config import Config
 from pypdf import PdfWriter
 from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject, NumberObject
+from sqlalchemy import create_engine
+from sqlalchemy.engine import make_url
+from sqlalchemy.schema import CreateSchema, DropSchema
+
+from tests.conftest import BACKEND_ROOT
 
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 R = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 REL = "http://schemas.openxmlformats.org/package/2006/relationships"
 CT = "http://schemas.openxmlformats.org/package/2006/content-types"
 MAIN = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+
+
+@pytest.fixture
+def app_db_url(app_db_url, monkeypatch):
+    """Opt in to PostgreSQL using a fresh, test-owned schema per resume test."""
+    postgres = os.environ.get("ACM_TEST_POSTGRES_URL")
+    if not postgres:
+        yield app_db_url
+        return
+    base_url = make_url(postgres)
+    if base_url.get_backend_name() != "postgresql":
+        pytest.fail("ACM_TEST_POSTGRES_URL must point to a disposable PostgreSQL database")
+    schema = "resume_test_" + uuid4().hex
+    engine = create_engine(base_url)
+    with engine.begin() as connection:
+        connection.execute(CreateSchema(schema))
+    try:
+        url = base_url.update_query_dict(
+            {"options": f"-csearch_path={schema} -cstatement_timeout=15000"}
+        )
+        rendered = url.render_as_string(hide_password=False)
+        monkeypatch.setenv("APP_DATABASE_URL", rendered)
+        command.upgrade(Config(str(BACKEND_ROOT / "alembic-app.ini")), "head")
+        yield rendered
+    finally:
+        with engine.begin() as connection:
+            connection.execute(DropSchema(schema, cascade=True))
+        engine.dispose()
 
 
 @pytest.fixture
