@@ -2,10 +2,12 @@
 
 You are **M1 / Plai**. Read [plan.md](plan.md) for the central scope/tracker and [README.md](README.md) for the actual installation and test commands.
 
-## Current checkpoint (2026-09-17)
+## Current checkpoint (2026-09-18)
 
-A-01, A-02 and A-03 are merged. Plai's `feat/m1/complete-resume-pipeline` adds
+A-01 through A-03 and PR #14 are merged into main (`fae9b09`). PR #14 includes
 A-04 embeddings, A-05 intake/worker, A-06 upload/profile UI and A-07 model packaging.
+The PostgreSQL follow-up and its remaining limits are recorded in
+[resume validation](docs/resume/POSTGRES_VALIDATION.md).
 Read [Finish_plai.md](Finish_plai.md) for actual checks and outstanding deployment gates.
 Do not recreate the bootstrap or completed NLP tasks. Default mock embeddings cannot run
 the real worker; use the documented CPU setup for local integration.

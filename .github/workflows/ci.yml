@@ -88,6 +88,11 @@ jobs:
           uv run python -m scripts.check_databases
           uv run alembic -c alembic-app.ini upgrade head
           uv run alembic -c alembic-jobs.ini upgrade head
+      - name: Resume intake and worker concurrency on PostgreSQL
+        working-directory: services/backend
+        env:
+          ACM_TEST_POSTGRES_URL: postgresql+psycopg://career_app_user:local_app_only@127.0.0.1:5432/career_app
+        run: uv run pytest tests/resume/test_api_worker.py tests/resume/test_postgres_concurrency.py
       - name: Database logs
         if: failure()
         run: if [ -f .env ]; then docker compose --env-file .env -f infra/compose.yaml logs --no-color; fi

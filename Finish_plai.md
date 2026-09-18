@@ -86,3 +86,12 @@ actions/setup-python before uv sync. The code commit's successful CI result is l
 Manual URL imports, the two databases, 70/30 baseline and required S3/SageMaker scope are
 unchanged. There is no scheduled scraper. M2's research and live-source coverage are not
 marked complete by this branch.
+
+## Post-merge validation, 2026-09-18
+
+PR #14 merged as `fae9b09`. The earlier review/merge statements describe the
+pre-merge checkpoint. Docker is now available: 15 resume intake/queue tests
+passed against PostgreSQL 17.11, including concurrent upload/claim and lease
+reclamation. See [validation details](docs/resume/POSTGRES_VALIDATION.md).
+This closes those specific SQLite-only evidence gaps; live AWS and complete
+multi-process/two-database acceptance remain open.
