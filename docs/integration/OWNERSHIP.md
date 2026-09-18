@@ -31,3 +31,12 @@ M1 owns CPU model packaging and its SageMaker artifact. No owner needs to create
 cron, OpenSearch or Bedrock resources (2026-09-08 revision).
 Keep separate application/job migrations and shared dependency PRs. The scope
 change does not transfer resume or matching implementation to another member.
+
+## M1 completion branch handoff (2026-09-17)
+
+Plai's A-04–A-07 work necessarily touches shared dependency manifests/lockfiles,
+API/worker composition, queue lease helpers, generated API types, frontend client/routes,
+Next proxy limit and CI. These changes are grouped for Nai's review in Finish_plai.md.
+No canonical public DTO or migration changes. Ownership returns to Nai after integration;
+M2 retains all job DB and matching/research ownership. Three M2 files receive formatter-only
+changes to satisfy existing CI; no job/matching algorithm behavior is changed there.

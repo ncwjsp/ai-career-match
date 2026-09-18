@@ -89,7 +89,7 @@ def test_a_job_outside_the_revision_is_not_found(wired):
     assert client(wired).post(path).status_code == 404
 
 
-def test_the_planned_routes_owned_by_m1_and_m2_still_report_501(wired):
+def test_mounted_recommendations_read_uses_published_results(wired):
     response = client(wired).get(f"/api/v1/candidates/{wired['candidate_id']}/recommendations")
-    assert response.status_code == 501
-    assert response.json()["error"]["code"] == "NOT_IMPLEMENTED"
+    assert response.status_code == 200
+    assert response.json()["candidate_id"] == wired["candidate_id"]

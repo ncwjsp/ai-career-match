@@ -12,11 +12,25 @@ jobs:
         working-directory: services/backend
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.14"
       - uses: astral-sh/setup-uv@v6
         with:
           version: "0.12.2"
-          python-version: "3.12.14"
-      - run: uv sync --locked
+      - name: Install locked backend dependencies
+        run: |
+          python - <<'PY'
+          import subprocess
+          result = subprocess.run(['uv', 'sync', '--locked'], capture_output=True, text=True)
+          output = result.stdout + result.stderr
+          print(output)
+          if result.returncode:
+              # Public package install only; no secret values are passed to this step.
+              diagnostic = output[-12000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print('::error title=Locked dependency installation::' + diagnostic)
+          raise SystemExit(result.returncode)
+          PY
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest
@@ -39,15 +53,31 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:resume
   databases:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.14"
       - uses: astral-sh/setup-uv@v6
         with:
           version: "0.12.2"
-          python-version: "3.12.14"
-      - run: uv sync --project services/backend --locked
+      - name: Install locked backend dependencies
+        run: |
+          python - <<'PY'
+          import subprocess
+          result = subprocess.run(['uv', 'sync', '--project', 'services/backend', '--locked'], capture_output=True, text=True)
+          output = result.stdout + result.stderr
+          print(output)
+          if result.returncode:
+              # Public package install only; no secret values are passed to this step.
+              diagnostic = output[-12000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print('::error title=Locked dependency installation::' + diagnostic)
+          raise SystemExit(result.returncode)
+          PY
       - name: Start the two local databases
         run: |
           cp .env.example .env
@@ -60,7 +90,7 @@ jobs:
           uv run alembic -c alembic-jobs.ini upgrade head
       - name: Database logs
         if: failure()
-        run: docker compose --env-file .env -f infra/compose.yaml logs --no-color
+        run: if [ -f .env ]; then docker compose --env-file .env -f infra/compose.yaml logs --no-color; fi
       - name: Stop CI services
         if: always()
-        run: docker compose --env-file .env -f infra/compose.yaml down
+        run: if [ -f .env ]; then docker compose --env-file .env -f infra/compose.yaml down; fi

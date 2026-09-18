@@ -33,3 +33,9 @@ Thumbs.db
 
 **/next-env.d.ts
 **/.pnpm-store/
+
+# Private local resume bytes and downloaded model artifacts
+.local-object-store/
+.models/
+test-results/
+playwright-report/

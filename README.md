@@ -1,9 +1,14 @@
 # AI Career Match
 
-A three-person NLP project. This checkout contains the SET-01 shell and initial
-SET-02 contracts, synthetic data and test doubles. Start with [plan.md](plan.md),
-[START_HERE.md](START_HERE.md) and the [bootstrap handoff](docs/integration/BOOTSTRAP_HANDOFF.md).
-Real domain integration remains assigned work. A-01 parsing is merged on `main`.
+A three-person NLP project. Resume parsing, English NLP, profiles, versioned CPU/SageMaker
+embeddings, upload/analysis/profile APIs and intake UI are implemented. The existing M2
+recommendation/job reads and M3 explanation/results flow are mounted. Start with
+[START_HERE.md](START_HERE.md), [plan.md](plan.md) and the [M1 handoff](Finish_plai.md).
+Live deployment and the remaining M2 retrieval/research work are not complete.
+
+For the full local resume flow, follow [A-05/A-06](docs/resume/A05_A06_INTAKE.md) and
+[CPU model setup](docs/resume/A04_A07_MODELS.md). The default hash embedding adapter is
+only a fixture; the worker requires an explicitly selected CPU or SageMaker backend.
 
 ## Revised product scope
 
@@ -20,8 +25,8 @@ stored vectors and PostgreSQL queues keep the service count small, and the
 explanation LLM stays provider-neutral. Where the application itself runs is still
 open (D07).
 See [architecture and costs](plan.md#2-proposed-architecture-and-technology-stack).
-The import UI/API, real adapters and deployment are not implemented by this
-scope revision; production mode remains intentionally disabled in the bootstrap.
+The URL import service/CLI and cloud adapters exist; live deployment and source/model
+acceptance remain separate gates. See Finish_plai.md and Finish_nai.md.
 
 ## Requirements
 
@@ -56,7 +61,7 @@ Open http://127.0.0.1:3000. API documentation is at
 http://127.0.0.1:8000/docs. Stop either server with Ctrl+C.
 The frontend proxies `/backend/*` to FastAPI; no browser CORS setup is necessary.
 For a production-build smoke test, stop the frontend, run `pnpm build`, then
-`pnpm start`. This verifies the shell; it does not make the backend production ready.
+`pnpm start`. This verifies the frontend; live cloud and database gates still apply.
 
 Environment examples use local development values only. Defaults work without
 copying an environment file. To customize them, copy `apps/web/.env.example` to
@@ -77,26 +82,23 @@ variables read by boto3 — never from a committed file, and never from a
 
 | Surface | Current behavior |
 | --- | --- |
-| Web home | Responsive project shell; resume upload is visibly unavailable |
-| `/recommendations/<candidate id>` | Ranked jobs and job detail. Shows a documented empty state until B-06's recommendations endpoint exists |
+| Web home | English PDF/DOCX upload, real processing states and profile/evidence display |
+| `/recommendations/<candidate id>` | Reads the retained candidate's published rankings and job details |
 | `GET /health/live` | Process health |
 | `GET /health/ready` | Reports the mode and, in real mode, which adapters the deployment reaches |
 | `GET /dev/fixtures` | Read-only synthetic profile, jobs, scores, events and explanation |
 | `.../jobs/{job_id}/explanation` | **Implemented** (C-02): candidate-scoped, cached per revision, validated against the computed evidence |
-| `/api/v1/*` (upload, profile, jobs, recommendations) | Documented contracts; valid requests return structured **501** until A-05/B-06 implement them |
-| Invalid planned requests | Structured **422** |
+| `/api/v1/*` (upload, analysis, profile, jobs, recommendations) | Implemented; uploads require the database and worker, private reads require the owning session |
+| Invalid requests | Structured **422** |
 | `APP_ENV=production` | Startup fails unless `APP_MODE=real` with S3, SageMaker and a real LLM provider configured |
 
-No user-facing upload flow is implemented. Do not use real resumes with this
-checkout. Fixture scores are predetermined values, and the default explanation
-generator is a deterministic offline stand-in. The API is a local development
-service.
+Use synthetic resumes until live privacy, retention and deployment gates are reviewed.
+Fixture scores are predetermined; the default explanation generator is an offline stand-in.
+For real local semantics, explicitly select the CPU adapter and package its weights.
 
-`career_app` persistence, the durable queue, the job-change dispatcher and
-incremental matching are implemented and tested (C-01/C-08), so a newly imported
-job refreshes a retained candidate with no second upload. Real ranking still
-needs M2's matcher: the worker entry point refuses to start without it rather
-than publishing synthetic scores.
+`career_app` persistence, durable queues, the dispatcher and incremental matching are
+implemented. The integrated worker processes resume analysis and both matching triggers.
+It refuses the hash embedding backend so fixture vectors cannot become published scores.
 
 From `services/backend`, demonstrate both matching triggers:
 
@@ -130,7 +132,7 @@ One pinned PostgreSQL container creates two independent databases:
 
 Application and job credentials are separate. The initialization script revokes
 public connection access to both databases and grants each owner its own access.
-Only localhost exposes the PostgreSQL port. There are no domain tables yet.
+Only localhost exposes the PostgreSQL port. Both owners now supply independent domain migrations.
 
 From `services/backend`:
 
@@ -142,7 +144,7 @@ uv run alembic -c alembic-jobs.ini upgrade head
 
 The check connects using each role and verifies that it cannot connect to the
 other database. Each Alembic command uses its own URL and migration history.
-M3 and M2 will add their domain metadata before using Alembic autogeneration.
+Keep M3 application migrations and M2 job migrations independent.
 If passwords or the host port change in root `.env`, update the corresponding
 backend URLs too; URL-encode special characters in passwords.
 
@@ -157,9 +159,8 @@ docker compose --env-file .env -f infra/compose.yaml stop
 ```
 
 **Verified locally on 2026-09-07:** both databases start, each owner connects only
-to its own database, and both Alembic upgrade commands pass. Each database has
-its own empty migration-version table; domain tables are still assigned work.
-CI includes these checks; GitHub run results have not been verified here.
+to its own database, and both Alembic upgrade commands pass. That historical bootstrap check preceded the domain migrations now on main.
+Current domain migrations and database isolation also pass in [GitHub CI](https://github.com/ncwjsp/ai-career-match/actions/runs/35248430957) on code commit `581cbef`.
 
 This checkout uses **127.0.0.1:15432** because Windows rejected binding port 5432
 with error 10013. Root `.env` and `services/backend/.env` are aligned to 15432;
@@ -221,12 +222,9 @@ CI repeats code, fixture, schema/type drift and database checks on pushes/PRs.
 
 ## Working independently
 
-- **Plai / M1:** finish A-01 review/merge, then start A-02 shared NLP.
-- **M2:** start B-09 in `feat/m2/b-09-job-database`; investigate permitted sources
-  for single-URL imports in B-01. JobThai/JobsDB are candidate sources, not approved integrations.
-- **M3 / Nai:** C-01 application persistence and the S3/SageMaker adapters; take
-  custody of shared config/contracts and route wiring; A-01 parser dependencies
-  are already promoted into the backend manifest and lockfile.
+- **Plai / M1:** review the A-04–A-07 completion branch; see Finish_plai.md.
+- **M2:** finish stored retrieval, transformer matching, LDA and measured evaluation.
+- **M3 / Nai:** review shared integration and complete PostgreSQL/live cloud deployment gates.
 
 Use the [ownership map](docs/integration/OWNERSHIP.md) and teammate prompts in
 START_HERE.md. M3 alone updates shared manifests, generated contracts, CI and the

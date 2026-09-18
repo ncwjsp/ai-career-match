@@ -31,8 +31,10 @@ def test_prefers_json_ld_jobposting_when_present():
 
 
 def test_falls_back_to_title_tag_and_body_text_without_json_ld():
-    html = "<html><head><title>NLP Engineer at Example Labs</title></head>" \
-           "<body><p>Build things with Python.</p></body></html>"
+    html = (
+        "<html><head><title>NLP Engineer at Example Labs</title></head>"
+        "<body><p>Build things with Python.</p></body></html>"
+    )
 
     result = normalize_posting(html, document_id="job-1", fetched_at=FETCHED_AT)
 

@@ -143,7 +143,12 @@ def _parse(body: object, expected_count: int) -> EmbeddingBatch:
             raise DependencyUnavailable(
                 "The embedding endpoint returned a vector of the wrong dimension."
             )
-        values = [float(value) for value in vector]
+        try:
+            values = [float(value) for value in vector]
+        except (TypeError, ValueError, OverflowError) as error:
+            raise DependencyUnavailable(
+                "The embedding endpoint returned nonnumeric values."
+            ) from error
         if not all(math.isfinite(value) for value in values) or not any(values):
             raise DependencyUnavailable(
                 "The embedding endpoint returned a zero or non-finite vector."
@@ -173,11 +178,19 @@ def build_embedding_client(settings: Settings) -> EmbeddingClient:
     """Build the client the configuration asks for. Called once at startup."""
     if settings.embedding_backend == "local":
         return DeterministicEmbeddingClient()
-    return SageMakerEmbeddingClient(
-        endpoint_name=settings.sagemaker_embedding_endpoint,
-        client=_build_runtime_client(
-            settings.sagemaker_region_or_default, settings.sagemaker_timeout_seconds
-        ),
-        region=settings.sagemaker_region_or_default,
-        timeout_seconds=settings.sagemaker_timeout_seconds,
+    from app.nlp.embeddings import BaselineEmbeddingClient
+
+    if settings.embedding_backend == "cpu":
+        from app.nlp.cpu_embedding import CpuEmbeddingClient
+
+        return BaselineEmbeddingClient(CpuEmbeddingClient(settings.embedding_model_dir))
+    return BaselineEmbeddingClient(
+        SageMakerEmbeddingClient(
+            endpoint_name=settings.sagemaker_embedding_endpoint,
+            client=_build_runtime_client(
+                settings.sagemaker_region_or_default, settings.sagemaker_timeout_seconds
+            ),
+            region=settings.sagemaker_region_or_default,
+            timeout_seconds=settings.sagemaker_timeout_seconds,
+        )
     )

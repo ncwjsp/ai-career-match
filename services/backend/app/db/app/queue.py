@@ -149,11 +149,13 @@ class SqlWorkQueue:
             session.commit()
             return claimed
 
-    def acknowledge(self, event_id: str) -> None:
+    def acknowledge(self, event_id: str, owner: str | None = None) -> None:
         """Finish a unit of work. Recorded durably so a replay is a no-op."""
         with self._factory() as session:
-            row = session.get(WorkQueueRow, event_id)
-            if row is None:
+            row = session.scalar(
+                select(WorkQueueRow).where(WorkQueueRow.event_id == event_id).with_for_update()
+            )
+            if row is None or (owner is not None and row.lease_owner != owner):
                 return
             row.state = "done"
             row.lease_owner = None
@@ -163,12 +165,14 @@ class SqlWorkQueue:
             event_type = row.event_type
         self._processed.mark(event_id, event_type)
 
-    def retry(self, event_id: str, error: str | None = None) -> None:
+    def retry(self, event_id: str, error: str | None = None, owner: str | None = None) -> None:
         """Reschedule after a backoff, or park the row once attempts run out."""
         now = self._clock.now()
         with self._factory() as session:
-            row = session.get(WorkQueueRow, event_id)
-            if row is None:
+            row = session.scalar(
+                select(WorkQueueRow).where(WorkQueueRow.event_id == event_id).with_for_update()
+            )
+            if row is None or (owner is not None and row.lease_owner != owner):
                 return
             row.last_error = error
             row.lease_owner = None
@@ -181,6 +185,25 @@ class SqlWorkQueue:
                 row.state = "pending"
                 row.available_at = to_storage_utc(now + timedelta(seconds=self._backoff))
             session.commit()
+
+    def renew(self, event_id: str, owner: str) -> bool:
+        """Renew only the current, unexpired lease; an old process cannot steal it."""
+        now = to_storage_utc(self._clock.now())
+        with self._factory() as session:
+            from sqlalchemy import update
+
+            result = session.execute(
+                update(WorkQueueRow)
+                .where(
+                    WorkQueueRow.event_id == event_id,
+                    WorkQueueRow.state == "inflight",
+                    WorkQueueRow.lease_owner == owner,
+                    WorkQueueRow.lease_expires_at > now,
+                )
+                .values(lease_expires_at=to_storage_utc(self._clock.now() + self._lease))
+            )
+            session.commit()
+            return result.rowcount == 1
 
     def counts(self) -> dict[str, int]:
         with self._factory() as session:
@@ -270,8 +293,8 @@ class SqlAnalysisQueue:
             {"run": run.model_dump(mode="json"), "file": file.model_dump(mode="json")},
         )
 
-    def claim(self) -> tuple[AnalysisRun, FileRef] | None:
-        claimed = self._queue.claim_payload()
+    def claim(self, owner: str | None = None) -> tuple[AnalysisRun, FileRef] | None:
+        claimed = self._queue.claim_payload(owner)
         if claimed is None:
             return None
         payload = claimed[2]

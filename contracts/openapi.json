@@ -1789,7 +1789,7 @@
     }
   },
   "info": {
-    "description": "Shared bootstrap. /api/v1 handlers return 501 until their owners implement them. /dev/fixtures returns synthetic data only; production mode is disabled.",
+    "description": "Resume intake, candidate profiles, recommendations and grounded explanations. /dev/fixtures returns synthetic data only.",
     "title": "AI Career Match API",
     "version": "0.1.0"
   },
@@ -1820,6 +1820,46 @@
             },
             "description": "Successful Response"
           },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
           "422": {
             "content": {
               "application/json": {
@@ -1828,9 +1868,9 @@
                 }
               }
             },
-            "description": "Invalid request."
+            "description": "Unprocessable Entity"
           },
-          "501": {
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -1838,14 +1878,14 @@
                 }
               }
             },
-            "description": "Planned feature; not implemented."
+            "description": "Service Unavailable"
           }
         },
         "summary": "Analysis Status",
         "tags": [
-          "planned"
+          "resume"
         ],
-        "x-implementation-status": "planned"
+        "x-implementation-status": "implemented"
       }
     },
     "/api/v1/candidates/{candidate_id}/recommendations": {
@@ -1873,32 +1913,42 @@
             },
             "description": "Successful Response"
           },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not this session's candidate."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "No published recommendations yet."
+          },
           "422": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             },
-            "description": "Invalid request."
-          },
-          "501": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Planned feature; not implemented."
+            "description": "Validation Error"
           }
         },
         "summary": "Candidate Recommendations",
         "tags": [
-          "planned"
+          "matching"
         ],
-        "x-implementation-status": "planned"
+        "x-implementation-status": "implemented"
       }
     },
     "/api/v1/candidates/{candidate_id}/recommendations/{revision}/jobs/{job_id}/explanation": {
@@ -1980,7 +2030,7 @@
         "tags": [
           "explanations"
         ],
-        "x-implementation-status": "planned"
+        "x-implementation-status": "implemented"
       },
       "post": {
         "description": "Generate (or return the cached) explanation for one ranked job.",
@@ -2060,7 +2110,7 @@
         "tags": [
           "explanations"
         ],
-        "x-implementation-status": "planned"
+        "x-implementation-status": "implemented"
       }
     },
     "/api/v1/jobs/{job_id}": {
@@ -2088,32 +2138,32 @@
             },
             "description": "Successful Response"
           },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unknown job."
+          },
           "422": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             },
-            "description": "Invalid request."
-          },
-          "501": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Planned feature; not implemented."
+            "description": "Validation Error"
           }
         },
         "summary": "Job Detail",
         "tags": [
-          "planned"
+          "jobs"
         ],
-        "x-implementation-status": "planned"
+        "x-implementation-status": "implemented"
       }
     },
     "/api/v1/resumes": {
@@ -2140,6 +2190,46 @@
             },
             "description": "Successful Response"
           },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
           "422": {
             "content": {
               "application/json": {
@@ -2148,9 +2238,9 @@
                 }
               }
             },
-            "description": "Invalid request."
+            "description": "Unprocessable Entity"
           },
-          "501": {
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2158,14 +2248,14 @@
                 }
               }
             },
-            "description": "Planned feature; not implemented."
+            "description": "Service Unavailable"
           }
         },
         "summary": "Upload Resume",
         "tags": [
-          "planned"
+          "resume"
         ],
-        "x-implementation-status": "planned"
+        "x-implementation-status": "implemented"
       }
     },
     "/api/v1/resumes/{resume_id}/profile": {
@@ -2193,6 +2283,46 @@
             },
             "description": "Successful Response"
           },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
           "422": {
             "content": {
               "application/json": {
@@ -2201,9 +2331,9 @@
                 }
               }
             },
-            "description": "Invalid request."
+            "description": "Unprocessable Entity"
           },
-          "501": {
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2211,14 +2341,14 @@
                 }
               }
             },
-            "description": "Planned feature; not implemented."
+            "description": "Service Unavailable"
           }
         },
         "summary": "Candidate Profile",
         "tags": [
-          "planned"
+          "resume"
         ],
-        "x-implementation-status": "planned"
+        "x-implementation-status": "implemented"
       }
     },
     "/dev/fixtures": {

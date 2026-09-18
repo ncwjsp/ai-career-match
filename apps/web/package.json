@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "api:generate": "node scripts/api-types.mjs",
-    "api:check": "node scripts/api-types.mjs --check"
+    "api:check": "node scripts/api-types.mjs --check",
+    "test:resume": "playwright test"
   },
   "dependencies": {
     "next": "16.3.4",
@@ -21,14 +22,15 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@playwright/test": "1.56.1",
     "@tailwindcss/postcss": "4.3.3",
-    "tailwindcss": "4.3.3",
-    "typescript": "5.9.3",
     "@types/node": "24.10.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.7",
     "eslint": "9.39.1",
     "eslint-config-next": "16.3.4",
-    "openapi-typescript": "7.13.0"
+    "openapi-typescript": "7.13.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3"
   }
 }

@@ -11,9 +11,9 @@ EMBEDDER = DeterministicEmbeddingClient()
 
 
 def _job(job_id: str, *, title: str, description: str) -> object:
-    return make_job(
-        job_id=job_id, content_version=1, title=title, requirements=[]
-    ).model_copy(update={"description": description})
+    return make_job(job_id=job_id, content_version=1, title=title, requirements=[]).model_copy(
+        update={"description": description}
+    )
 
 
 def test_rerank_bounds_the_pool_to_the_requested_size():

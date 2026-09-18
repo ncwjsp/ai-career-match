@@ -2,13 +2,27 @@
 
 You are **M1 / Plai**. Read [plan.md](plan.md) for the central scope/tracker and [README.md](README.md) for the actual installation and test commands.
 
-## Current checkpoint
+## Current checkpoint (2026-09-17)
 
-The repository is [ncwjsp/ai-career-match](https://github.com/ncwjsp/ai-career-match). SET-01 (`0a00918`) and initial SET-02 (`858c58b`) are published on `main`. Do not recreate or recommit the bootstrap.
+A-01, A-02 and A-03 are merged. Plai's `feat/m1/complete-resume-pipeline` adds
+A-04 embeddings, A-05 intake/worker, A-06 upload/profile UI and A-07 model packaging.
+Read [Finish_plai.md](Finish_plai.md) for actual checks and outstanding deployment gates.
+Do not recreate the bootstrap or completed NLP tasks. Default mock embeddings cannot run
+the real worker; use the documented CPU setup for local integration.
 
-A-01 is published at `a8d4c91` on `feat/m1/a-01-resume-parsers`, with recorded evidence of 58 parser tests / 90 total backend tests passing. It is not merged into main yet. M3 must coordinate its shared dependency handoff (`pypdf==6.17.0`, `defusedxml==0.7.1`), review and CI before merging. Its source/tests/docs stay on that feature branch until merge; this scope revision does not copy or replace them.
+**M2 can continue independently:** B-03 stored-vector retrieval, transformer pair matching,
+LDA, real job corpus/labels and measured five-method comparison. Use the pinned shared
+embedding version from [the model handoff](docs/resume/A04_A07_MODELS.md). Existing M2
+URL import/scoring/read services are on main; their old Not Started tracker entries are
+historical and should be reconciled by their owner against the implemented acceptance gates.
 
-The bootstrap has shell/health endpoints, synthetic adapters and generated contracts. Product endpoints are planned 501 responses; queues/repositories are in-memory test doubles. Local database startup, separate roles and independent migration runners were verified; real domain tables, import flow, ranking, explanations and deployment remain assigned work. See [historical bootstrap evidence](docs/integration/BOOTSTRAP_HANDOFF.md). Published commits alone do not establish GitHub CI or teammate review.
+**Nai reviews shared integration:** dependencies/lockfiles, route mounting, queue leases,
+worker composition, generated types and frontend mounting. S3/SageMaker remain required
+for deployment. Confirm hosting/budget/retention, PostgreSQL concurrency and live AWS
+parity before the team claims INT-02 or production readiness.
+
+The earlier task-order text below is retained as project history; this checkpoint and
+Finish_plai.md supersede instructions to start A-01/A-02 or recreate existing components.
 
 ## Revised scope, 2026-09-07
 

@@ -10,6 +10,7 @@ from app.contracts.models import ErrorDetail, ErrorResponse
 from app.core.container import Container
 from app.core.errors import AppError
 from app.core.settings import Settings
+from app.modules.resume.upload_limit import UploadBodyLimit
 
 
 def create_app(settings: Settings | None = None, container: Container | None = None) -> FastAPI:
@@ -19,10 +20,11 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         title="AI Career Match API",
         version="0.1.0",
         description=(
-            "Shared bootstrap. /api/v1 handlers return 501 until their owners implement them. "
-            "/dev/fixtures returns synthetic data only; production mode is disabled."
+            "Resume intake, candidate profiles, recommendations and grounded explanations. "
+            "/dev/fixtures returns synthetic data only."
         ),
     )
+    application.add_middleware(UploadBodyLimit, max_bytes=config.max_upload_bytes)
     application.state.settings = config
     application.state.container = container or Container(settings=config)
     application.include_router(router)
