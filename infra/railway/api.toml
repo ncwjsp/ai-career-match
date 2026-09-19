@@ -11,7 +11,7 @@ watchPatterns = ["services/backend/**", "infra/backend.Dockerfile", "infra/railw
 [deploy]
 # Both chains are independent; each runs as its own database's owner role.
 preDeployCommand = [
-  "alembic -c alembic-app.ini upgrade head && alembic -c alembic-jobs.ini upgrade head",
+  "sh -c 'alembic -c alembic-app.ini upgrade head && alembic -c alembic-jobs.ini upgrade head'",
 ]
 startCommand = "sh -c 'exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}'"
 healthcheckPath = "/health/ready"
