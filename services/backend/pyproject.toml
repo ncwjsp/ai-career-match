@@ -27,6 +27,7 @@ dependencies = [
 [project.optional-dependencies]
 # CPU model packaging/local semantic inference; the API only needs the transport.
 ml = ["torch==2.8.0", "transformers==4.55.4", "huggingface-hub==0.34.4"]
+research = ["scikit-learn==1.7.2"]
 
 [dependency-groups]
 dev = [
