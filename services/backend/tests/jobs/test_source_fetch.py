@@ -14,6 +14,28 @@ NOW = datetime(2026, 9, 5, tzinfo=UTC)
 ALLOWED = frozenset({"jobs.example.test"})
 
 
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://user:password@jobs.example.test/posting/1",
+        "https://jobs.example.test:8080/posting/1",
+        "https://jobs.example.test:invalid/posting/1",
+    ],
+)
+def test_credentials_and_custom_ports_are_rejected(url):
+    transport = FakeTransport()
+    with pytest.raises(SourceFetchError):
+        fetch_single_posting(url, ALLOWED, transport=transport)
+    assert transport.calls == []
+
+
+def test_redirect_response_is_not_imported_as_a_job():
+    with pytest.raises(SourceFetchError, match="302"):
+        fetch_single_posting(
+            "https://jobs.example.test/posting/1", ALLOWED, transport=FakeTransport(status=302)
+        )
+
+
 class FakeTransport:
     def __init__(self, status=200, content_type="text/html", body=b"<html>a posting</html>"):
         self.status = status

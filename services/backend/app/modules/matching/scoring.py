@@ -109,15 +109,21 @@ class Matcher(MatcherProtocol):
         clock: Clock | None = None,
         *,
         preprocessing_version: str = "matching-text-v1",
+        pair_embeddings=None,
     ):
         self._embedding_client = embedding_client or build_embedding_client(Settings())
         self._clock = clock or SystemClock()
         self._preprocessing_version = preprocessing_version
+        self._pair_embeddings = pair_embeddings
 
     def score_pair(
         self, profile: CandidateProfile, job: JobPosting, scoring_version: str
     ) -> MatchResult:
-        batch = self._embedding_client.embed([profile_text(profile), job_text(job)])
+        batch = (
+            self._pair_embeddings.embed_pair(profile, job)
+            if self._pair_embeddings is not None
+            else self._embedding_client.embed([profile_text(profile), job_text(job)])
+        )
         semantic_fit = cosine(batch.vectors[0], batch.vectors[1])
 
         comparisons = compare_skills(profile, job)

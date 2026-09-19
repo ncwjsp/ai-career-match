@@ -58,6 +58,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/job-imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import Job */
+        post: operations["import_job_api_v1_job_imports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/jobs/{job_id}": {
         parameters: {
             query?: never;
@@ -349,6 +366,21 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** IngestionReport */
+        IngestionReport: {
+            /** Changed Jobs */
+            changed_jobs: number;
+            /** Event Ids */
+            event_ids: string[];
+            /** New Jobs */
+            new_jobs: number;
+            /** Run Id */
+            run_id: string;
+            /** Unchanged Jobs */
+            unchanged_jobs: number;
+            /** Warnings */
+            warnings: string[];
+        };
         /** JobChangeEvent */
         JobChangeEvent: {
             /** Content Ref */
@@ -375,6 +407,11 @@ export interface components {
              * @constant
              */
             schema_version: 1;
+        };
+        /** JobImportRequest */
+        JobImportRequest: {
+            /** Url */
+            url: string;
         };
         /** JobPosting */
         JobPosting: {
@@ -965,6 +1002,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_job_api_v1_job_imports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JobImportRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IngestionReport"];
                 };
             };
             /** @description Validation Error */

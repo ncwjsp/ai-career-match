@@ -4,7 +4,7 @@ from app.core.settings import ConfigurationError, Settings
 
 
 def test_defaults_need_no_aws_account():
-    settings = Settings()
+    settings = Settings(_env_file=None)
     assert (settings.object_store_backend, settings.embedding_backend) == ("local", "local")
     settings.validate_for_runtime()
 
