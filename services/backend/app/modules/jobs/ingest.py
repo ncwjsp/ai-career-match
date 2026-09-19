@@ -26,7 +26,7 @@ below are the domain operations a future router calls.
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from urllib.parse import urlparse, urlunparse
 
 from app.contracts.interfaces import JobRepository
@@ -66,6 +66,7 @@ class JobIngestionService:
         *,
         allowed_hosts: frozenset[str],
         source_id: str,
+        source_ids_by_host: Mapping[str, str] | None = None,
         transport: HttpTransport | None = None,
         clock: Clock | None = None,
         id_factory: Callable[[str], str] = new_id,
@@ -75,6 +76,7 @@ class JobIngestionService:
         self._raw_snapshots = raw_snapshots
         self._allowed_hosts = allowed_hosts
         self._source_id = source_id
+        self._source_ids_by_host = dict(source_ids_by_host or {})
         self._transport = transport
         self._clock = clock or SystemClock()
         self._id_factory = id_factory
@@ -89,8 +91,12 @@ class JobIngestionService:
         canonical_url = _canonicalize_url(url)
         job_id = _canonical_job_id(canonical_url)
 
+        # One service serves several approved hosts; each import is attributed
+        # to its own host's source, falling back to the configured default.
+        source_id = self._source_ids_by_host.get(parsed.hostname, self._source_id)
+
         run_id = self._id_factory("run")
-        self._import_runs.start(run_id, url, source_id=self._source_id)
+        self._import_runs.start(run_id, url, source_id=source_id)
         try:
             page = fetch_single_posting(url, self._allowed_hosts, transport=self._transport)
         except SourceFetchError as error:
@@ -122,7 +128,7 @@ class JobIngestionService:
 
         candidate = JobPosting(
             job_id=job_id,
-            source_id=self._source_id,
+            source_id=source_id,
             source_url=canonical_url,
             content_version=next_version,
             title=normalized.title,

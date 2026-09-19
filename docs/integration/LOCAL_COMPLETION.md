@@ -17,14 +17,16 @@ IMPORT_ACCESS_TOKENS=replace-with-your-local-team-token
 
 Restart the API after editing the environment. Open `/job-import` from the
 home page's **Team: add or update jobs** link. Enter the same token and a direct
-`https://job-boards.greenhouse.io/<company>/jobs/<id>` posting URL. The token
+posting URL from Greenhouse (`https://job-boards.greenhouse.io/<company>/jobs/<id>`),
+Lever (`https://jobs.lever.co/<company>/<posting-id>`) or Ashby
+(`https://jobs.ashbyhq.com/<company>/<posting-id>`). The token
 stays in page memory, is sent only in the Authorization header, and is not
 saved in browser storage. Do not put it in a NEXT_PUBLIC variable.
 
 Successful imports persist in `career_jobs`. Re-importing unchanged content
 does not emit a new event; changed postings refresh retained candidates via
 the worker. Existing data survives fetch failures. Redirects, URL credentials
-and custom ports are rejected. Only the existing approved host is supported.
+and custom ports are rejected. Only the approved hosts in `docs/job-sources/REGISTER.md` are supported.
 
 The API currently completes one bounded import synchronously and returns the
 canonical IngestionReport. A timeout should be retried with the same URL;

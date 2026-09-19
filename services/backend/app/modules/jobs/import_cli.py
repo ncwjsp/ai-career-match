@@ -20,15 +20,15 @@ nothing here is SQLite-specific. Re-running the same URL later is safe and
 is in fact how B-02's "explicit re-import" is meant to be used -- unchanged
 content produces no duplicate event, changed content bumps the version.
 
-Registers "greenhouse" as a `job_sources` row on first use (idempotent: a
-second registration just updates the same row), then runs
-`JobIngestionService.import_url()` against the real network via the default
-`UrllibTransport` and prints the resulting `IngestionReport`.
+Registers every approved source as a `job_sources` row on first use
+(idempotent), then runs `JobIngestionService.import_url()` against the real
+network via the default `UrllibTransport` and prints the resulting
+`IngestionReport`. The run is attributed to the URL's own source.
 
-Only `job-boards.greenhouse.io` is in the allow-list here because it is the
-only source docs/job-sources/REGISTER.md records as approved. Adding another
-host requires the same live robots.txt/ToS verification B-01 did for this
-one -- this script deliberately does not let a caller pass an arbitrary host.
+The allow-list comes from `app.modules.jobs.sources.approved` (Greenhouse,
+Lever and Ashby), which mirrors docs/job-sources/REGISTER.md. Adding another
+host requires the same live robots.txt/ToS verification B-01 did -- this
+script deliberately does not let a caller pass an arbitrary host.
 """
 
 from __future__ import annotations
@@ -46,8 +46,12 @@ from app.db.jobs.sources import (
     SqlJobSourceRepository,
 )
 from app.modules.jobs.ingest import JobIngestionService, UnsupportedSourceError
+from app.modules.jobs.sources.approved import (
+    APPROVED_HOSTS,
+    SOURCE_IDS_BY_HOST,
+    register_approved_sources,
+)
 
-APPROVED_HOSTS = frozenset({"job-boards.greenhouse.io"})
 SOURCE_ID = "greenhouse"
 
 
@@ -55,7 +59,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "url",
-        help="An approved posting URL, e.g. https://job-boards.greenhouse.io/<company>/jobs/<id>",
+        help="An approved Greenhouse, Lever or Ashby posting URL, "
+        "e.g. https://jobs.lever.co/<company>/<posting-id>",
     )
     args = parser.parse_args(argv)
 
@@ -65,14 +70,7 @@ def main(argv: list[str] | None = None) -> int:
     raw_snapshots = SqlJobRawSnapshotRepository(factory)
     sources = SqlJobSourceRepository(factory)
 
-    sources.register(
-        SOURCE_ID,
-        "Greenhouse",
-        "https://job-boards.greenhouse.io",
-        "ats",
-        True,
-        permitted_notes="Approved 2026-09-15; see docs/job-sources/REGISTER.md.",
-    )
+    register_approved_sources(sources)
 
     service = JobIngestionService(
         jobs,
@@ -80,6 +78,7 @@ def main(argv: list[str] | None = None) -> int:
         raw_snapshots,
         allowed_hosts=APPROVED_HOSTS,
         source_id=SOURCE_ID,
+        source_ids_by_host=SOURCE_IDS_BY_HOST,
         clock=SystemClock(),
     )
 

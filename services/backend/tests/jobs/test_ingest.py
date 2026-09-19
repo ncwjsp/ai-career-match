@@ -216,3 +216,36 @@ def test_mark_closed_on_an_unknown_job_returns_none(make_service):
     service = make_service(FakeTransport())
 
     assert service.mark_closed("job-does-not-exist") is None
+
+
+def test_each_import_is_attributed_to_its_own_hosts_source(
+    job_repository, job_import_run_repository, job_raw_snapshot_repository, job_source_repository
+):
+    job_source_repository.register(
+        "second-source", "Second Source", "https://jobs.second.test", "fixture", True
+    )
+    second_url = "https://jobs.second.test/posting/9"
+    service = JobIngestionService(
+        job_repository,
+        job_import_run_repository,
+        job_raw_snapshot_repository,
+        allowed_hosts=frozenset({"jobs.example.test", "jobs.second.test"}),
+        source_id="fixture-source",
+        source_ids_by_host={"jobs.second.test": "second-source"},
+        transport=FakeTransport(
+            {
+                URL: (200, "text/html", HTML_V1.encode()),
+                second_url: (200, "text/html", HTML_V2.encode()),
+            }
+        ),
+        clock=FixedClock(NOW),
+    )
+
+    first = service.import_url(URL)
+    second = service.import_url(second_url)
+
+    first_run = job_import_run_repository.get(first.run_id)
+    second_run = job_import_run_repository.get(second.run_id)
+    assert job_repository.get(first_run.job_id).source_id == "fixture-source"
+    assert job_repository.get(second_run.job_id).source_id == "second-source"
+    assert second_run.source_id == "second-source"

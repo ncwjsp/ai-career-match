@@ -74,7 +74,10 @@ JOB_DATABASE_URL=sqlite:///career_jobs.sqlite uv run python -m app.modules.jobs.
   https://job-boards.greenhouse.io/<company>/jobs/<id>
 ```
 
-It registers "greenhouse" as a `job_sources` row (idempotent), then calls
+Lever (`https://jobs.lever.co/<company>/<posting-id>`) and Ashby
+(`https://jobs.ashbyhq.com/<company>/<posting-id>`) URLs work the same way
+since 2026-09-19. It registers every approved source as a `job_sources` row
+(idempotent), attributes the run to the URL's own source, then calls
 `JobIngestionService.import_url()` against the real network and prints the
 resulting `IngestionReport`. `JOB_DATABASE_URL` can point at a real
 PostgreSQL `career_jobs` instead once one exists -- nothing here is

@@ -73,3 +73,22 @@ def test_a_fetch_failure_exits_nonzero(job_db_url, monkeypatch, capsys):
 
     assert exit_code == 1
     assert "FAILED" in capsys.readouterr().err
+
+
+def test_lever_and_ashby_urls_import_as_their_own_sources(job_db_url, monkeypatch, capsys):
+    from app.core.settings import Settings
+    from app.db.jobs.database import create_job_engine, session_factory
+    from app.db.jobs.repository import SqlJobRepository
+    from app.modules.jobs.ingest import _canonical_job_id, _canonicalize_url
+
+    lever = "https://jobs.lever.co/example/0b1c2d3e-aaaa-bbbb-cccc-123456789abc"
+    ashby = "https://jobs.ashbyhq.com/example/7458d4e9-da2e-47bd-98cb-adfda43d42b2"
+    page = (200, "text/html", HTML.encode())
+    _patch_transport(monkeypatch, FakeTransport({lever: page, ashby: page}))
+
+    assert import_cli.main([lever]) == 0
+    assert import_cli.main([ashby]) == 0
+
+    jobs = SqlJobRepository(session_factory(create_job_engine(Settings())))
+    for url, source_id in ((lever, "lever"), (ashby, "ashby")):
+        assert jobs.get(_canonical_job_id(_canonicalize_url(url))).source_id == source_id

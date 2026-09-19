@@ -1,9 +1,10 @@
 # Job source register (B-01)
 
-Owner: M2. Status as of this writing: **one source is approved** —
-Greenhouse-hosted single-company job boards (`job-boards.greenhouse.io`).
-See "Approved sources" below for the evidence. Everything else in the
-candidates table is still unverified.
+Owner: M2. Status as of 2026-09-19: **three sources are approved** — the
+Greenhouse, Lever and Ashby hosted single-company job boards. See "Approved
+sources" below for the evidence and "Checked and not approved" for sites that
+were ruled out. The code-side list is `app/modules/jobs/sources/approved.py`;
+keep the two in step.
 
 Per plan.md: evaluate individual job-URL sources for permitted retrieval,
 storage and display before implementing anything against them; implement one
@@ -53,22 +54,63 @@ teammate ran the checks using `verify_cli.py`:
    permissive `robots.txt` and content served with no login/paywall gate, it
    is a reasonable basis to approve.
 
-**Allow-list:** `job-boards.greenhouse.io` is the host to pass in
-`allowed_hosts` when calling `fetch_single_posting()`. B-02's import flow is
-what will actually wire this in as its caller.
+### Lever-hosted job boards (`jobs.lever.co`) — approved 2026-09-19
 
-## Candidates (desk research only — not independently verified)
+Pattern: `https://jobs.lever.co/<company>/<posting-id>`. Checked live on
+2026-09-19 by Claude (assistant) for Plai; a team member should re-read the
+ToS before the final report.
 
-| Source | Why it's a candidate | What still needs live verification |
+1. **robots.txt** — `User-agent: *` / `Allow: /`.
+2. **Real retrieval** — `https://jobs.lever.co/palantir/ac978161-6f46-4f6b-ad9e-a258e642751c`
+   returned HTTP 200 `text/html` with no redirect and a schema.org
+   `JobPosting` JSON-LD block. `import_cli` stored it end to end (title,
+   company, 4,572-character description) in a scratch `career_jobs`.
+3. **Terms** — Lever's Terms of Service bind customers who sign an Order Form;
+   no clause restricts third-party visitors reading public postings. Lever's
+   own Postings API documentation states that published postings are
+   publicly viewable and may be scraped by third parties. Absence of a
+   prohibition, not a written grant.
+
+### Ashby-hosted job boards (`jobs.ashbyhq.com`) — approved 2026-09-19
+
+Pattern: `https://jobs.ashbyhq.com/<company>/<posting-id>`. Same checker and
+caveat as Lever.
+
+1. **robots.txt** — `User-Agent: *` disallows only `/meeting/`, `/b/` and
+   `/api/`; posting pages are allowed.
+2. **Real retrieval** — `https://jobs.ashbyhq.com/ashby/7458d4e9-da2e-47bd-98cb-adfda43d42b2`
+   returned HTTP 200 `text/html`, no redirect, with `JobPosting` JSON-LD;
+   stored end to end by `import_cli`.
+3. **Terms** — Ashby's customer terms bind paying customers only; no clause
+   restricts visitors reading public job boards. Absence of a prohibition.
+
+Content on every approved board still belongs to the hiring company. Store
+and show it for this course project only, keep the source link on each job,
+and do not republish postings elsewhere.
+
+**Allow-list:** `APPROVED_HOSTS` in `app/modules/jobs/sources/approved.py`
+(`job-boards.greenhouse.io`, `jobs.lever.co`, `jobs.ashbyhq.com`). The API,
+the `/job-import` page and `import_cli` all use it, and each import is
+recorded under its own host's `source_id`.
+
+## Checked and not approved (2026-09-19)
+
+Live robots.txt checks from a normal network on 2026-09-19. "ToS not read"
+means the site was not pursued, not that it is permitted.
+
+| Source | Finding | Decision |
 | --- | --- | --- |
-| A single company's Lever-hosted job board (`jobs.lever.co/<company>`) | Same pattern as Greenhouse: a common ATS with a public-facing board. | Fetch and read that host's actual current `robots.txt`; read Lever's current Terms of Service; confirm no login/CAPTCHA gate; do one real retrieval. |
-| JobThai, JobsDB | Named directly in plan.md as the obvious "everyone assumes these work" case. | plan.md already flags these as unverified; nothing here changes that. Thai-market job boards' ToS commonly restrict automated retrieval — do not assume otherwise without reading the current text. |
-| RemoteOK, We Work Remotely | Historically publish a public JSON/RSS feed intended for reuse. | Confirm the feed still exists at its documented location, confirm current terms, and that "public feed" actually covers this project's storage/display use (re-publishing full postings vs. linking out are different questions). |
+| LinkedIn (`www.linkedin.com`) | robots.txt: `User-agent: *` / `Disallow: /` | Not allowed |
+| JobsDB (`th.jobsdb.com`) | robots.txt disallows `*/job/` and `*?` for every agent | Not allowed. Only a person copying text in by hand could work, pending ToS |
+| JobThai (`www.jobthai.com`) | robots.txt allows `/`, but the job-seeker ToS forbids reproducing, copying, modifying or disseminating site content without prior written consent | Not allowed without written permission (contact support@jobthai.com) |
+| Indeed, Glassdoor, Wellfound | robots.txt has partial rules for job pages; ToS not read | Not pursued |
+| SmartRecruiters (`jobs.smartrecruiters.com`) | Job page has no `JobPosting` JSON-LD; Posting API needs an API key | Not pursued |
+| Workable (`apply.workable.com`) | robots.txt permissive; no sample posting retrieved | Candidate: needs a real retrieval and ToS check |
+| RemoteOK (`remoteok.com/api`) | Public JSON API; its API terms require a followed link back to Remote OK and naming it as the source | Candidate: needs a feed adapter and visible attribution |
+| We Work Remotely | robots.txt allows job pages; ToS not read | Candidate |
 
-None of these should be read as a recommendation to implement against
-without the verification column being completed first. Greenhouse being
-approved already satisfies B-01's "one approved single-posting adapter"
-requirement — these remain candidates for later expansion, not blockers.
+A new candidate needs the same three checks as the approved rows, then one
+line in `approved.py` plus its evidence here.
 
 ## Why the sandbox couldn't do this itself
 
@@ -100,8 +142,8 @@ covers it with a fake). It refuses non-HTTPS URLs and any host not in an
 explicit allow-list before making a request, and bounds response size and
 timeout. It does **not** attempt general SSRF hardening (redirect chains,
 private-IP/DNS-rebinding defense, arbitrary-source support) — that is B-02's
-job for the manual-import flow; this adapter's allow-list is closed to
-`job-boards.greenhouse.io` for now (see "Approved sources" above).
+job for the manual-import flow; this adapter's allow-list is closed to the
+approved hosts (see "Approved sources" above).
 
 When another candidate clears live verification: add its host to the
 allow-list `fetch_single_posting()` is called with, note the evidence (dated

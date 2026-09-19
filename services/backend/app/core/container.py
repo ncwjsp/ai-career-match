@@ -116,23 +116,21 @@ class Container:
             SqlJobRawSnapshotRepository,
             SqlJobSourceRepository,
         )
-        from app.modules.jobs.import_cli import APPROVED_HOSTS, SOURCE_ID
         from app.modules.jobs.ingest import JobIngestionService
-
-        SqlJobSourceRepository(self.job_sessions).register(
-            SOURCE_ID,
-            "Greenhouse",
-            "https://job-boards.greenhouse.io",
-            "ats",
-            True,
-            permitted_notes="See docs/job-sources/REGISTER.md.",
+        from app.modules.jobs.sources.approved import (
+            APPROVED_HOSTS,
+            SOURCE_IDS_BY_HOST,
+            register_approved_sources,
         )
+
+        register_approved_sources(SqlJobSourceRepository(self.job_sessions))
         return JobIngestionService(
             self.jobs,
             SqlJobImportRunRepository(self.job_sessions),
             SqlJobRawSnapshotRepository(self.job_sessions),
             allowed_hosts=APPROVED_HOSTS,
-            source_id=SOURCE_ID,
+            source_id="greenhouse",
+            source_ids_by_host=SOURCE_IDS_BY_HOST,
             clock=self.clock,
         )
 
