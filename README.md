@@ -1,5 +1,14 @@
 # AI Career Match
 
+## Latest local checkpoint (2026-09-19)
+
+The local completion branch adds `/job-import`, guarded URL imports, persisted
+pair embeddings and a two-database import/refresh test. Research now includes
+cross-encoder, LDA and an executable five-method CLI.
+See [local completion](docs/integration/LOCAL_COMPLETION.md) for setup and limits.
+Cloud deployment and human-labeled evaluation are still open.
+
+
 A three-person NLP project. Resume parsing, English NLP, profiles, versioned CPU/SageMaker
 embeddings, upload/analysis/profile APIs and intake UI are implemented. The existing M2
 recommendation/job reads and M3 explanation/results flow are mounted. Start with

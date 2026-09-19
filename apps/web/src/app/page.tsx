@@ -1,4 +1,5 @@
 import { ResumeUpload } from "@/features/upload/ResumeUpload";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
         understand the skills each role needs.
       </p>
       <ResumeUpload />
+      <Link href="/job-import" className="mt-10 inline-block text-sm underline">Team: add or update jobs</Link>
     </div>
   );
 }

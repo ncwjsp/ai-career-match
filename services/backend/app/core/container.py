@@ -95,6 +95,47 @@ class Container:
     def jobs(self) -> SqlJobRepository:
         return SqlJobRepository(self.job_sessions)
 
+    @cached_property
+    def job_embeddings(self):
+        from app.db.jobs.embeddings import SqlJobEmbeddingRepository
+
+        return SqlJobEmbeddingRepository(self.job_sessions)
+
+    @cached_property
+    def pair_embeddings(self):
+        from app.search.pairs import PersistedPairEmbeddings
+
+        return PersistedPairEmbeddings(
+            self.embedding_client, self.candidate_embeddings, self.job_embeddings
+        )
+
+    @cached_property
+    def job_ingestion(self):
+        from app.db.jobs.sources import (
+            SqlJobImportRunRepository,
+            SqlJobRawSnapshotRepository,
+            SqlJobSourceRepository,
+        )
+        from app.modules.jobs.import_cli import APPROVED_HOSTS, SOURCE_ID
+        from app.modules.jobs.ingest import JobIngestionService
+
+        SqlJobSourceRepository(self.job_sessions).register(
+            SOURCE_ID,
+            "Greenhouse",
+            "https://job-boards.greenhouse.io",
+            "ats",
+            True,
+            permitted_notes="See docs/job-sources/REGISTER.md.",
+        )
+        return JobIngestionService(
+            self.jobs,
+            SqlJobImportRunRepository(self.job_sessions),
+            SqlJobRawSnapshotRepository(self.job_sessions),
+            allowed_hosts=APPROVED_HOSTS,
+            source_id=SOURCE_ID,
+            clock=self.clock,
+        )
+
     # --- queues and adapters ------------------------------------------------------
     @cached_property
     def match_queue(self) -> SqlMatchQueue:

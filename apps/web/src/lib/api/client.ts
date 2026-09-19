@@ -91,6 +91,14 @@ export function loadDevelopmentFixtures(): Promise<FixtureBundle> {
   return request<FixtureBundle>("/dev/fixtures");
 }
 
+export function importJob(url: string, token: string): Promise<components["schemas"]["IngestionReport"]> {
+  return request("/api/v1/job-imports", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ url }),
+  });
+}
+
 export function getRecommendations(candidateId: string): Promise<RecommendationSet> {
   return request<RecommendationSet>(
     `/api/v1/candidates/${encodeURIComponent(candidateId)}/recommendations`,

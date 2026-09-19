@@ -1,5 +1,14 @@
 # Start here, Plai
 
+## Latest local checkpoint (2026-09-19)
+
+The local completion branch adds `/job-import`, guarded URL imports, persisted
+pair embeddings and a two-database import/refresh test. Research now includes
+cross-encoder, LDA and an executable five-method CLI.
+See [local completion](docs/integration/LOCAL_COMPLETION.md) for setup and limits.
+Cloud deployment and human-labeled evaluation are still open.
+
+
 You are **M1 / Plai**. Read [plan.md](plan.md) for the central scope/tracker and [README.md](README.md) for the actual installation and test commands.
 
 ## Current checkpoint (2026-09-18)

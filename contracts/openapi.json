@@ -645,6 +645,56 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "IngestionReport": {
+        "additionalProperties": false,
+        "properties": {
+          "changed_jobs": {
+            "minimum": 0.0,
+            "title": "Changed Jobs",
+            "type": "integer"
+          },
+          "event_ids": {
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+              "type": "string"
+            },
+            "title": "Event Ids",
+            "type": "array"
+          },
+          "new_jobs": {
+            "minimum": 0.0,
+            "title": "New Jobs",
+            "type": "integer"
+          },
+          "run_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "unchanged_jobs": {
+            "minimum": 0.0,
+            "title": "Unchanged Jobs",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "run_id",
+          "new_jobs",
+          "changed_jobs",
+          "unchanged_jobs",
+          "event_ids",
+          "warnings"
+        ],
+        "title": "IngestionReport",
+        "type": "object"
+      },
       "JobChangeEvent": {
         "additionalProperties": false,
         "properties": {
@@ -699,6 +749,22 @@
           "content_ref"
         ],
         "title": "JobChangeEvent",
+        "type": "object"
+      },
+      "JobImportRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "maxLength": 2048,
+            "minLength": 1,
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "JobImportRequest",
         "type": "object"
       },
       "JobPosting": {
@@ -2109,6 +2175,48 @@
         "summary": "Request Explanation",
         "tags": [
           "explanations"
+        ],
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/api/v1/job-imports": {
+      "post": {
+        "operationId": "import_job_api_v1_job_imports_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngestionReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Job",
+        "tags": [
+          "job-imports"
         ],
         "x-implementation-status": "implemented"
       }

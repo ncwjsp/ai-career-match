@@ -38,7 +38,10 @@ def load_matcher(container=None):
         ) from error
     if container is not None:
         return Matcher(
-            container.embedding_client, container.clock, preprocessing_version="shared-text-v1"
+            container.embedding_client,
+            container.clock,
+            preprocessing_version="shared-text-v1",
+            pair_embeddings=container.pair_embeddings,
         )
     return Matcher()
 

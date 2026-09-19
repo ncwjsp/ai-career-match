@@ -58,7 +58,8 @@ class UrllibTransport:
     def get(self, url: str, *, timeout: float) -> tuple[int, str, bytes]:
         request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
         try:
-            with urllib.request.urlopen(request, timeout=timeout) as response:  # noqa: S310
+            opener = urllib.request.build_opener(_NoRedirect())
+            with opener.open(request, timeout=timeout) as response:
                 body = response.read(MAX_RESPONSE_BYTES + 1)
                 return response.status, response.headers.get_content_type(), body
         except urllib.error.HTTPError as error:
@@ -66,6 +67,11 @@ class UrllibTransport:
             return error.code, content_type, b""
         except (urllib.error.URLError, TimeoutError, OSError) as error:
             raise SourceFetchError(f"Request to {url} failed: {error}") from error
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise SourceFetchError("Redirects are not supported; use the direct posting URL.")
 
 
 def fetch_single_posting(
@@ -84,6 +90,11 @@ def fetch_single_posting(
     decide that; it enforces whatever the caller already decided.
     """
     parsed = urlparse(url)
+    try:
+        if parsed.username or parsed.password or parsed.port not in (None, 443):
+            raise SourceFetchError("Job URLs must not contain credentials or custom ports.")
+    except ValueError as error:
+        raise SourceFetchError("Invalid job URL port.") from error
     if parsed.scheme != "https":
         raise SourceFetchError(f"Refusing a non-HTTPS URL: {url!r}")
     if parsed.hostname not in allowed_hosts:
@@ -95,7 +106,7 @@ def fetch_single_posting(
     status, content_type, body = client.get(url, timeout=timeout)
     if len(body) > MAX_RESPONSE_BYTES:
         raise SourceFetchError(f"Response from {url} exceeded {MAX_RESPONSE_BYTES} bytes.")
-    if status >= 400:
+    if status < 200 or status >= 300:
         raise SourceFetchError(f"{url} returned HTTP {status}.")
     return FetchedPage(
         url=url,

@@ -104,4 +104,6 @@ def test_an_endpoint_name_is_required():
 
 
 def test_the_default_configuration_builds_the_offline_client():
-    assert isinstance(build_embedding_client(Settings()), DeterministicEmbeddingClient)
+    assert isinstance(
+        build_embedding_client(Settings(_env_file=None)), DeterministicEmbeddingClient
+    )

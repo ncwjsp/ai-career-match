@@ -325,6 +325,10 @@ class ProcessedText(Contract):
     preprocessing_version: Text
 
 
+class JobImportRequest(Contract):
+    url: Annotated[str, Field(min_length=1, max_length=2048)]
+
+
 class IngestionReport(Contract):
     run_id: Identifier
     new_jobs: Annotated[int, Field(ge=0)]
