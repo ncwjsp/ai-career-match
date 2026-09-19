@@ -1,0 +1,19 @@
+# Railway service "api". Owner: M3 (C-06). See docs/integration/DEPLOYMENT.md.
+# In the service settings, set the config-as-code path to infra/railway/api.toml.
+# Every secret (database URLs, AWS keys, IMPORT_ACCESS_TOKENS) is a Railway
+# variable, never a value in this file.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "infra/backend.Dockerfile"
+watchPatterns = ["services/backend/**", "infra/backend.Dockerfile", "infra/railway/api.toml"]
+
+[deploy]
+# Both chains are independent; each runs as its own database's owner role.
+preDeployCommand = [
+  "alembic -c alembic-app.ini upgrade head && alembic -c alembic-jobs.ini upgrade head",
+]
+startCommand = "sh -c 'exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}'"
+healthcheckPath = "/health/ready"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"

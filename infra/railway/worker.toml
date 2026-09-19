@@ -1,0 +1,13 @@
+# Railway service "worker". Owner: M3 (C-06). See docs/integration/DEPLOYMENT.md.
+# In the service settings, set the config-as-code path to infra/railway/worker.toml.
+# Same image and variables as "api". Keep exactly one replica, give it no public
+# domain, and never enable sleeping: queued matching waits for this process.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "infra/backend.Dockerfile"
+watchPatterns = ["services/backend/**", "infra/backend.Dockerfile", "infra/railway/worker.toml"]
+
+[deploy]
+startCommand = "python -m scripts.run_worker"
+restartPolicyType = "ALWAYS"

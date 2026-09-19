@@ -85,7 +85,52 @@ Replace these estimates with the first measured bill.
   limit. Test a ~9 MB upload through the Vercel URL. If it fails, lower
   `MAX_UPLOAD_BYTES` or send uploads directly to the API.
 
+### Step by step
+
+Prepared files: `infra/railway/api.toml`, `infra/railway/worker.toml`,
+`infra/railway/init-databases.sql`, `infra/aws/app-policy.json`,
+`infra/aws/sagemaker-execution-policy.json` and
+`infra/aws/deploy-serverless-endpoint.sh`. Replace the `REGION`, `ACCOUNT_ID`,
+`RESUME_BUCKET` and Bedrock ARN placeholders before use.
+
+Checked locally on 2026-09-19: `infra/backend.Dockerfile` builds (1.11 GB,
+no torch), the image contains both Alembic configs and the worker, and the
+`api.toml` start command serves `/health/ready` on a custom `$PORT`. Nothing
+was deployed.
+
+Steps marked **(owner)** need the account holder: account creation, sign-in,
+payment and typing secrets are never done by an assistant.
+
+1. **(owner)** Create the AWS account, enable MFA, and create a $5 AWS Budgets
+   alert. Create the Railway (Hobby) and Vercel (Hobby) accounts.
+2. **(owner)** In the chosen region, request access to the Bedrock model and
+   note its model or inference-profile ARN.
+3. Create the private S3 bucket (block public access, encryption, versioning).
+4. Create an IAM user for Railway with `app-policy.json`, and a SageMaker
+   execution role (trust `sagemaker.amazonaws.com`) with
+   `sagemaker-execution-policy.json`. **(owner)** creates the access key.
+5. Package the model (`uv run --extra ml python -m scripts.package_resume_model`),
+   then run `deploy-serverless-endpoint.sh` with `CONFIRM_PAID_RESOURCES=yes`.
+6. In Railway: add PostgreSQL, run `init-databases.sql` with `psql` against
+   the superuser URL, then create services `api` and `worker` from this repo
+   with the config paths above. Give `api` a public domain; give `worker` none.
+7. **(owner)** Set variables on both services: `APP_ENV=production`,
+   `APP_MODE=real`, both database URLs, `OBJECT_STORE_BACKEND=s3`,
+   `RESUME_BUCKET`, `AWS_REGION`, `EMBEDDING_BACKEND=sagemaker`,
+   `SAGEMAKER_EMBEDDING_ENDPOINT`, `SAGEMAKER_TIMEOUT_SECONDS=60`,
+   `LLM_PROVIDER=bedrock`, `LLM_MODEL_ID`, `IMPORT_ACCESS_TOKENS`,
+   `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+8. In Vercel: import the repository with Root Directory `apps/web` and set
+   `BACKEND_URL=https://<api public domain>`.
+9. Smoke test: `/health/ready` reports `mode: real`; upload a synthetic resume
+   through the Vercel URL (also try ~9 MB); import one Greenhouse job; confirm
+   ranked results and an explanation.
+
 ### To verify before calling it deployed
+
+- Cold start: the model took about 30 s to load on a Windows CPU (A-07
+  measurement). A serverless cold start may be similar, so start with
+  `SAGEMAKER_TIMEOUT_SECONDS=60` and measure.
 
 - The existing `SageMakerEmbeddingClient` uses `invoke_endpoint`, which
   Serverless Inference also uses. Parity against the A-07 model and

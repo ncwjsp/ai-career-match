@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ResumeObjects",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+      "Resource": "arn:aws:s3:::RESUME_BUCKET/resumes/*"
+    },
+    {
+      "Sid": "EmbeddingEndpoint",
+      "Effect": "Allow",
+      "Action": "sagemaker:InvokeEndpoint",
+      "Resource": "arn:aws:sagemaker:REGION:ACCOUNT_ID:endpoint/career-resume-inference"
+    },
+    {
+      "Sid": "ExplanationModel",
+      "Effect": "Allow",
+      "Action": "bedrock:InvokeModel",
+      "Resource": ["BEDROCK_MODEL_OR_INFERENCE_PROFILE_ARN"]
+    }
+  ]
+}
