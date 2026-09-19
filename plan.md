@@ -505,16 +505,16 @@ Use only `Not Started`, `In Progress`, `Blocked`, or `Done` in Status. Percentag
 
 Plai serializes edits through the bootstrap checkpoint; M3 takes over afterward. Each task owner updates its GitHub issue when starting work, opening a PR, becoming blocked, or completing validation. The document maintainer copies status, issue/PR links, evidence, and dates into the relevant row. Keep IDs stable. Split oversized tasks into new IDs. Dependencies below refer to real integration; agreed mocks can unblock component development.
 
-Status reflects inspected local Git history and recorded validation. Bootstrap commits are published; A-01 is on a published feature branch awaiting review/merge. No overall percentage is claimed. DOC-01 does not imply feature implementation; preserve historical evidence dates and record new checks only when run. M2/M3 review, GitHub CI and domain completion still require evidence.
+Status reflects `main` at `d8144f1` (PRs #1-#16 merged) and recorded validation, re-inspected 2026-09-19. No feature branch is awaiting merge. No overall percentage is claimed. DOC-01 does not imply feature implementation; preserve historical evidence dates and record new checks only when run. M2/M3 review, GitHub CI and domain completion still require evidence.
 
 ### Planning and shared setup
 
 | Task/feature | Assigned member | Status | Dependencies | Notes | Completion |
 | --- | --- | --- | --- | --- | --- |
 | DOC-01 - Analyze sources, maintain plan and starter guide | M3 (Plai authored bootstrap/revision) | Done | Sources and user clarification | Revised for manual URL imports and proposed Railway hosting; required NLP/research, two triggers, formula and separate databases preserved. Documentation only. | 100% |
-| SET-01 - GitHub, ownership, skeleton, dependencies, CI skeleton | Plai (M1) | In Progress | DOC-01 | Published as `0a00918` on main. Recorded shell/checks and both databases/role isolation/migrations passed. Teammate fresh-clone review, handles and GitHub CI evidence remain to confirm. | 90% |
-| SET-02 - Contracts, evidence/events, fixtures, generated client | Plai (M1), then M3 maintains | In Progress | SET-01; M2/M3 review | Initial contracts published as `858c58b`; recorded 32 bootstrap tests passed. M3 review and new manual-import request/status/port follow-up remain; mocks do not establish production adapters. | 85% |
-| SET-03 - Formats, languages, source/hosting/model feasibility and limits | M3 | Not Started | SET-01; M1/M2 feasibility input | Resolve D01-D09 before dependent final choices. | 0% |
+| SET-01 - GitHub, ownership, skeleton, dependencies, CI skeleton | Plai (M1) | In Progress | DOC-01 | Published as `0a00918` on main. Recorded shell/checks and both databases/role isolation/migrations passed; GitHub CI passed for `581cbef` (PR #14). Teammate fresh-clone review and M2/M3 handles remain to confirm. | 90% |
+| SET-02 - Contracts, evidence/events, fixtures, generated client | Plai (M1), then M3 maintains | In Progress | SET-01; M2/M3 review | Initial contracts `858c58b`; JobImportRequest and `POST /api/v1/job-imports` added with regenerated OpenAPI/client types in PR #16. M3 review of the import contract remains. | 95% |
+| SET-03 - Formats, languages, source/hosting/model feasibility and limits | M3 | In Progress | SET-01; M1/M2 feasibility input | D03 first source (Greenhouse) and D09 import access resolved; D07 partly decided. D01, D02, D04-D06 and the rest of D07 remain. | 30% |
 
 ### Member 1
 
@@ -532,35 +532,35 @@ Status reflects inspected local Git history and recorded validation. Bootstrap c
 
 | Task/feature | Assigned member | Status | Dependencies | Notes | Completion |
 | --- | --- | --- | --- | --- | --- |
-| B-01 - Permitted live job source and source register | M2 | Not Started | SET-01 | Investigate access before promising a named platform. | 0% |
-| B-02 - Manual URL import/UI, job NLP, freshness and events | M2 | Not Started | SET-02; B-01; A-02; B-09 | Fixtures unblock work; M3 freezes import contracts/access and wires the exported page. | 0% |
-| B-03 - Stored embeddings and exact semantic retrieval | M2 | Not Started | SET-02; A-04; B-02 | Persisted vectors, reproducible rebuilds and version checks; no external search service. | 0% |
-| B-04 - Keyword, TF-IDF and sentence-embedding approaches | M2 | Not Started | SET-02; A-04 for embeddings | Lexical methods start from synthetic profiles/jobs. | 0% |
-| B-05 - Transformer matching and hybrid re-ranking/scoring | M2 | Not Started | B-03; B-04 | Freeze tuned settings before held-out evaluation. | 0% |
-| B-06 - Skills, strengths/gaps, reasons and jobs/recommendations APIs | M2 | Not Started | SET-02; B-04; A-03 for real profiles | Baseline works before hybrid; validate final B-05 integration. | 0% |
-| B-07 - LDA topics and skill-cluster report | M2 | Not Started | B-02 | Required course analysis; no dashboard dependency. | 0% |
-| B-08 - Five-method benchmark, metrics and research report | M2 | Not Started | B-04; B-05; B-06; VAL-01 | Build harness early; complete final report after labels freeze. | 0% |
-| B-09 - Independent job database, migrations and transactional outbox | M2 | Not Started | SET-02 | Own `career_jobs`; no candidate tables or upload dependency. | 0% |
-| B-10 - Incremental new/updated-job matching against stored profiles | M2 | Not Started | SET-02; B-04; B-06; C-01 for persistence | Start with fixture profiles; reuse score_pair; integrate later B-05 scoring version. | 0% |
+| B-01 - Permitted live job source and source register | M2 | In Progress | SET-01 | PRs #8/#9: bounded single-posting fetch adapter, verification helper and [source register](docs/job-sources/REGISTER.md). `job-boards.greenhouse.io` approved with live robots/retrieval/terms evidence (2026-09-15). Other candidates unverified; stale cutoff (D03) open. | 85% |
+| B-02 - Manual URL import/UI, job NLP, freshness and events | M2 (UI/API finished by Plai) | In Progress | SET-02; B-01; A-02; B-09 | PRs #10/#13: import service, normalization, HTML/JSON-LD extraction, summary and CLI. PR #16: guarded API and `/job-import` page; browser/API tests pass. Import is synchronous (no background queue); stale/expiry policy pending D03. | 90% |
+| B-03 - Stored embeddings and exact semantic retrieval | M2 (vector reuse by Plai) | In Progress | SET-02; A-04; B-02 | PR #7: exact cosine retrieval and reproducible rebuilds. PR #16: worker persists/reuses versioned vectors and rejects mismatched model metadata. Local/SageMaker vector parity remains for INT-02. | 90% |
+| B-04 - Keyword, TF-IDF and sentence-embedding approaches | M2 | Done | SET-02; A-04 for embeddings | PR #6: keyword, TF-IDF and sentence-embedding baselines; exercised by the five-method CLI (PR #16). | 100% |
+| B-05 - Transformer matching and hybrid re-ranking/scoring | M2 (cross-encoder by Plai) | In Progress | B-03; B-04 | PR #6 formula/Matcher, PR #11 hybrid re-ranking, PR #16 pinned offline cross-encoder. Tuning and final model choice wait for VAL-01 labels; live app keeps the 70/30 baseline. | 70% |
+| B-06 - Skills, strengths/gaps, reasons and jobs/recommendations APIs | M2 | In Progress | SET-02; B-04; A-03 for real profiles | PRs #6/#7: present/partial/missing skills and jobs/recommendations routes, consumed by C-04. Final B-05 scoring integration remains. | 90% |
+| B-07 - LDA topics and skill-cluster report | M2 (tooling by Plai) | In Progress | B-02 | PR #16: seeded LDA command and tests. Substantive topic/skill-cluster report needs a representative permitted corpus. | 40% |
+| B-08 - Five-method benchmark, metrics and research report | M2 (CLI by Plai) | In Progress | B-04; B-05; B-06; VAL-01 | PR #12 harness/rubric/metrics; PR #16 five-method CLI run on synthetic inputs (smoke only). Held-out human-labeled report remains. | 50% |
+| B-09 - Independent job database, migrations and transactional outbox | M2 | Done | SET-02 | PR #3: `career_jobs` schema, migrations and outbox; two-PostgreSQL flow verified in PR #16. | 100% |
+| B-10 - Incremental new/updated-job matching against stored profiles | M2 (vector reuse by Plai) | In Progress | SET-02; B-04; B-06; C-01 for persistence | PR #6 real Matcher; PR #16 two-trigger PostgreSQL test passes with synthetic source/encoder. Real-inference acceptance remains. | 90% |
 
 ### Member 3
 
 | Task/feature | Assigned member | Status | Dependencies | Notes | Completion |
 | --- | --- | --- | --- | --- | --- |
-| C-01 - Application DB, retained sessions, storage, queue and worker | M3 / Nai | In Progress | SET-02 | `career_app` schema/migration, sessions, profiles, matches, revisions, analyses, durable queue, S3/local storage and SageMaker/local inference implemented on `feat/m3/nai-integration` with 257 backend tests passing on SQLite. Real PostgreSQL run, the A-05 upload path and D06 durations remain. | 80% |
+| C-01 - Application DB, retained sessions, storage, queue and worker | M3 / Nai | In Progress | SET-02 | `career_app` schema/migration, sessions, profiles, matches, revisions, analyses, durable queue, S3/local storage and SageMaker/local inference implemented and on main. A-05 upload path wired (PR #14); PostgreSQL intake/queue checks (PR #15) and two-database flow (PR #16) pass. D06 durations and live S3 remain. | 90% |
 | C-02 - RAG context, hosted LLM explanations and validation | M3 / Nai | In Progress | SET-02; SET-03 for selected LLM access | Evidence context, fenced untrusted text, output validation against computed facts, caching per revision, Bedrock adapter and evidence-only fallback implemented and tested. Provider/model selection (SET-03) and real A-03/B-02 evidence remain. | 80% |
-| C-03 - Frontend shell, API client, polling and shared states | M3 / Nai | In Progress | SET-01; SET-02 | Shell, typed client, polling hook, shared states and the server-side import guard implemented; lint/typecheck/build pass. Mounting A-06's upload feature and M2's import component remains. | 70% |
-| C-04 - Ranked jobs, summaries, detail and explanation UI | M3 / Nai | In Progress | C-03; SET-02; B-06 for live data | Ranked list, revision/freshness display, skill states, detail and explanation states implemented against the contracts. They show a documented empty state until B-06's recommendations endpoint exists. | 70% |
-| C-05 - Route wiring, orchestration and end-to-end tests | M3 / Nai | In Progress | C-01; A-05; B-06; C-02; C-04; A-06 | Composition root, error handling and the explanation routes are wired and tested; the local job-refresh flow is covered end to end with fixture adapters. Upload-to-results needs A-05 and B-06. | 40% |
-| C-06 - Deployment services, S3/SageMaker, secrets, budgets and rollback | M3 / Nai | In Progress | SET-03; D07 host/budget | Container images, worker entry point, real-mode configuration guard and the deployment runbook exist. **Nothing is provisioned:** no AWS account, bucket, endpoint, host or budget. Live proof belongs to INT-02. | 30% |
-| C-07 - CI, documentation, contracts and plan maintenance | M3 / Nai | In Progress | SET-01; SET-02 | A-01's parser dependencies promoted into the manifest/lockfile, contracts and frontend types regenerated, scope revision and runbook documented. CI content unchanged; GitHub run results not verified here. | 40% |
-| C-08 - Job-event dispatch, retries, recommendation revisions and refresh | M3 / Nai | In Progress | C-01; B-09; B-10 for real matching | Outbox dispatch, batch checkpoints, lease recovery, bounded retries, active-profile re-checks, revision publication, expiry cleanup and reconciliation implemented; 32 integration tests cover redelivery, restart and expiry with a deterministic matcher. Real scoring needs B-04/B-10. | 85% |
+| C-03 - Frontend shell, API client, polling and shared states | M3 / Nai | In Progress | SET-01; SET-02 | Shell, typed client, polling hook, shared states and the server-side import guard implemented; lint/typecheck/build pass. Upload feature mounted on the home page (PR #14) and `/job-import` linked (PR #16). Deployed acceptance remains. | 90% |
+| C-04 - Ranked jobs, summaries, detail and explanation UI | M3 / Nai | In Progress | C-03; SET-02; B-06 for live data | Ranked list, revision/freshness display, skill states, detail and explanation states implemented; now reads B-06's recommendations endpoint. Explanations use the fake LLM until C-02 provider selection. | 85% |
+| C-05 - Route wiring, orchestration and end-to-end tests | M3 / Nai | In Progress | C-01; A-05; B-06; C-02; C-04; A-06 | Composition root, error handling and explanation routes wired and tested. With A-05 and B-06 merged, import-to-matching and changed-job refresh pass across two PostgreSQL databases (PR #16, synthetic source/encoder). Real-service end-to-end remains. | 80% |
+| C-06 - Deployment services, S3/SageMaker, secrets, budgets and rollback | M3 / Nai | In Progress | SET-03; D07 host/budget | Container images, worker entry point, real-mode configuration guard and the deployment runbook exist. Host and budget chosen 2026-09-19 (D07: Vercel + Railway + S3/SageMaker Serverless/Bedrock). **Nothing is provisioned** yet. Live proof belongs to INT-02. | 40% |
+| C-07 - CI, documentation, contracts and plan maintenance | M3 / Nai | In Progress | SET-01; SET-02 | Contracts/types regenerated through PR #16; CI now runs import browser tests, the two-database flow and research tests; this plan re-synced with main on 2026-09-19. GitHub CI result for PR #16 not recorded here. | 70% |
+| C-08 - Job-event dispatch, retries, recommendation revisions and refresh | M3 / Nai | In Progress | C-01; B-09; B-10 for real matching | Outbox dispatch, checkpoints, lease recovery, bounded retries, revision publication, expiry cleanup and reconciliation implemented; now driven by the real B-10 Matcher (PR #16). Single worker only; multi-process crash/load acceptance remains. | 90% |
 
 ### Integration, validation and release
 
 | Task/feature | Assigned member | Status | Dependencies | Notes | Completion |
 | --- | --- | --- | --- | --- | --- |
-| INT-01 - Local upload flow plus new-job refresh without reupload | M3; M1/M2 support | Not Started | C-05; A-04; B-03; B-02; B-10; C-08 | Demonstrate both matching triggers and both databases with labeled fixtures. | 0% |
+| INT-01 - Local upload flow plus new-job refresh without reupload | M3; M1/M2 support | In Progress | C-05; A-04; B-03; B-02; B-10; C-08 | PR #16: HTTP import to profile matching and changed-job refresh pass across two PostgreSQL databases in CI. Source/encoder are synthetic; a run with real imported jobs and the real CPU model remains. | 80% |
 | INT-02 - Live cloud/manual-source integration and version alignment | M3; M1/M2 support | Not Started | INT-01; C-06; A-07; B-02; B-03 | Verify real services, refresh, cleanup, and model/index parity. | 0% |
 | VAL-01 - Human labels and NLP/summary/skill/explanation review | M2; all members review | Not Started | SET-02; B-02; A-03; B-06; C-02 for generated-output review | Create labeling rubric before B-05 tuning; M2 merges label files. | 0% |
 | VAL-02 - Full functional, recovery, browser and deployment acceptance | M3; each domain owner fixes | Not Started | INT-02; VAL-01; B-08 | Record measured limits and unresolved defects. | 0% |
@@ -574,13 +574,13 @@ These are planning decisions to resolve, not claims that work is currently block
 | --- | --- | --- | --- | --- |
 | D01 | Are PDF and DOCX sufficient? Is legacy DOC or scanned-PDF OCR required? | M1 | G0 | Pending; proposed initial PDF/DOCX, detect unreadable scans. |
 | D02 | Supported resume/job languages and compatible extraction/embedding models. | M1 with M2 | G0 | Pending; align with selected live source. |
-| D03 | First permitted source, allowed data use/storage/display, source rules, manual recheck policy, and stale cutoff. | M2 | G0 | Pending; JobThai/JobsDB remain candidates. |
+| D03 | First permitted source, allowed data use/storage/display, source rules, manual recheck policy, and stale cutoff. | M2 | G0 | Partly resolved 2026-09-15/16 (PRs #8/#9): `job-boards.greenhouse.io` single postings approved with live evidence in the [source register](docs/job-sources/REGISTER.md). JobThai/JobsDB and others unverified; stale cutoff and recheck policy pending. |
 | D04 | Embedding/cross-encoder versions, chunking, dimensions, CPU memory/runtime budget, SageMaker instance type/serialization contract, and offline fine-tuning path. | M1 with M2 | Initial G0; final G3 | Pending; begin with pretrained baselines and verify local versus endpoint parity. |
 | D05 | Final score weights/normalization and evaluation split/k. | M2 | Protocol G1; final G3 | Initial formula: 70% clamped cosine + 30% required-skill coverage; partial=0.5; unknown requirements use semantic-only. Final tuning pending. |
 | D06 | Retained-session/profile matching lifetime, expiry/deletion, file limits and refresh latency/workload. | M3 with M1 | G0; measure at G2 | Pending duration/limits; new-job matching must work while browser is closed, until profile expiry/deletion. |
-| D07 | AWS account/region, S3 bucket and SageMaker instance type, credential policy, application host (Railway or AWS-native), hosted LLM access, resource limits and spending cap. | M3 | G0 | Partly decided 2026-09-08: AWS S3 for resume storage and SageMaker for embedding inference. Account owner, region, instance type, endpoint start/stop policy, application host and budget remain pending; nothing is provisioned. |
+| D07 | AWS account/region, S3 bucket and SageMaker instance type, credential policy, application host (Railway or AWS-native), hosted LLM access, resource limits and spending cap. | M3 | G0 | Decided 2026-09-19 (Plai): Vercel Hobby for the web; Railway Hobby for API, worker and PostgreSQL; AWS S3, SageMaker **Serverless Inference** (no real-time endpoint) and Bedrock as LLM, one region (proposed `ap-southeast-1`). Estimated $6-10/month with AWS Budgets alert $5 and Railway hard limit. See [DEPLOYMENT.md](docs/integration/DEPLOYMENT.md). AWS account owner, Bedrock model and measured cost remain; nothing is provisioned. |
 | D08 | Confirm teammate assignments/handles, GitHub visibility/remote, source location, estimates and dates. | Plai (M1) with all members | Bootstrap / G0 | Remote published at ncwjsp/ai-career-match; Plai confirmed as M1 and bootstrap owner; M2/Baibua and M3/Nai assignments and handles pending. |
-| D09 | Who may import job URLs and how is access protected? | M3 with M2 and Plai | Before B-02 integration | Proposed team/admin-only page and server-side guard; candidate upload remains the only required candidate input. Confirm before access contract freeze. |
+| D09 | Who may import job URLs and how is access protected? | M3 with M2 and Plai | Before B-02 integration | Implemented 2026-09-19 (PR #16): `/job-import` requires a private team token from `IMPORT_ACCESS_TOKENS`, checked server-side and sent only in the Authorization header. Candidate upload remains the only candidate input. |
 
 ### Change log
 
@@ -593,6 +593,10 @@ These are planning decisions to resolve, not claims that work is currently block
 | 2026-09-08 | M3/Nai implemented C-01 persistence, the durable queue, S3/SageMaker adapters, C-08 job-event dispatch and incremental matching, C-02 grounded explanations, the C-03/C-04 result UI, the C-05 composition root and explanation routes, and C-06 images/runbook on `feat/m3/nai-integration`. Also promoted A-01's parser dependencies into the shared manifest and lockfile, which a fresh `uv sync --locked` needed. 257 backend tests, ruff, the OpenAPI snapshot and the frontend lint/typecheck/build pass locally; no cloud resource is provisioned and no teammate review or GitHub CI run is recorded. | M3 tasks C-01 to C-08; [handoff](Finish_nai.md) |
 | 2026-09-08 | Team decided to use AWS S3 for resume storage and Amazon SageMaker for NLP/embedding inference, restoring that part of S9/P4-P5. Recorded required environment variables, kept OpenSearch/Bedrock and scheduled collection out of the MVP, and left the application host open in D07. Infrastructure only; no scope, formula or ownership change. | Team revision relayed by M3/Nai |
 | 2026-09-07 | Recorded published bootstrap commits `0a00918`/`858c58b` and A-01 feature `a8d4c91`; replaced scheduled collection/AWS scope with manual URL imports and proposed Railway hosting. Reassigned B-02 UI, B-03 retrieval, A-07 packaging and C-06 deployment without changing task IDs or claiming implementation. | Plai user revision; M3 maintains shared docs/contracts |
+| 2026-09-08 to 16 | M2 merged B-09 (PR #3), B-04/B-06/B-10 (#6), B-03/B-06 routes (#7), B-01 adapter and Greenhouse approval (#8/#9), B-02 import service and CLI (#10/#13), B-05 hybrid (#11) and B-08 harness (#12). Tracker rows were not updated at the time. | M2 PRs; recorded retroactively 2026-09-19 |
+| 2026-09-17 to 19 | M1 completion (PR #14) and PostgreSQL validation (#15) merged. PR #16 merged the job-import UI/API, persisted matching vectors, cross-encoder, LDA and five-method CLI, and the two-database CI flow. | See evidence sections below |
+| 2026-09-19 | Re-synced all tracker rows, D03 and D09 with `main` at `d8144f1`. Status only; no new tests run for this edit. | Plai; C-07 |
+| 2026-09-19 | Chose the low-cost deployment (D07): Vercel + Railway + S3 + SageMaker Serverless + Bedrock, estimated $6-10/month. Documentation only; nothing provisioned. | Plai; C-06; [DEPLOYMENT.md](docs/integration/DEPLOYMENT.md) |
 
 ## 10. Final integration and deployment checklist
 
@@ -673,8 +677,8 @@ live AWS, real two-database flows and M2 evaluation remain outstanding.
 ## Current implementation evidence — 2026-09-19
 
 Plai authorized work across M1/M2/M3; the AWS setup is explicitly not ready.
-This checkpoint supersedes historical Not Started rows for implemented modules.
-Branch: `codex/complete-local-app`; review/merge is not yet claimed.
+Merged to main in PR #16 (`d8144f1`). The section 9 tracker rows were re-synced
+on 2026-09-19 and are authoritative; this table keeps the evidence as recorded.
 
 | Task/feature | Assigned member | Status | Dependencies | Notes |
 | --- | --- | --- | --- | --- |
