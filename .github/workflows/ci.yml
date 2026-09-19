@@ -35,6 +35,8 @@ jobs:
       - run: uv run ruff format --check .
       - run: uv run pytest
       - run: uv run python -m scripts.export_openapi --check
+      - name: Research harness and LDA tests
+        run: uv run --extra research pytest ../../research/evaluation
   frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -92,7 +94,8 @@ jobs:
         working-directory: services/backend
         env:
           ACM_TEST_POSTGRES_URL: postgresql+psycopg://career_app_user:local_app_only@127.0.0.1:5432/career_app
-        run: uv run pytest tests/resume/test_api_worker.py tests/resume/test_postgres_concurrency.py
+          ACM_TEST_JOB_POSTGRES_URL: postgresql+psycopg://career_jobs_user:local_jobs_only@127.0.0.1:5432/career_jobs
+        run: uv run pytest tests/resume/test_api_worker.py tests/resume/test_postgres_concurrency.py tests/resume/test_import_flow.py
       - name: Database logs
         if: failure()
         run: if [ -f .env ]; then docker compose --env-file .env -f infra/compose.yaml logs --no-color; fi

@@ -669,3 +669,25 @@ API/worker tests plus three concurrent intake/queue/lease checks (15 passed).
 Historical SQLite-only notes above apply to their original runs. This does not
 mark INT-01/INT-02 complete: job adapters remain synthetic in these tests and
 live AWS, real two-database flows and M2 evaluation remain outstanding.
+
+## Current implementation evidence — 2026-09-19
+
+Plai authorized work across M1/M2/M3; the AWS setup is explicitly not ready.
+This checkpoint supersedes historical Not Started rows for implemented modules.
+Branch: `codex/complete-local-app`; review/merge is not yet claimed.
+
+| Task/feature | Assigned member | Status | Dependencies | Notes |
+| --- | --- | --- | --- | --- |
+| B-02 manual URL import UI/API | Plai, original owner M2 | In Progress | Existing import service; team token | Form and guarded API implemented; browser/API tests pass; review/merge remains. |
+| B-03 stored vectors / B-10 incremental matching | Plai, original owner M2 | In Progress | A-04; both DBs | Worker reuses versioned persisted pair vectors; two-trigger PostgreSQL test passes with synthetic source/encoder. Exact search/rebuild already existed. |
+| B-05 cross-encoder / B-08 comparison | Plai, original owner M2 | In Progress | Frozen corpus and human labels | Offline pinned cross-encoder and five-method CLI run with real models on synthetic inputs. Final model selection and held-out report remain. |
+| B-07 LDA | Plai, original owner M2 | In Progress | Representative permitted corpus | Seeded LDA command and tests implemented; substantive topic/skill-cluster report remains. |
+| INT-01 | Plai; all owners | In Progress | Imported corpus; real inference acceptance | HTTP import to profile matching and changed-job refresh passed across two PostgreSQL databases. Source/encoder in this test are synthetic. |
+| C-07 documentation/CI | Plai, original owner M3 | In Progress | Review/merge | Updated types, current handoff and CI include import browser tests, two-DB flow and research tests. |
+| INT-02 / C-06 cloud deployment | M3 with Plai | Not Started | Account, host, region and budget | User confirmed not ready; no paid resources created. |
+| VAL-01 human labels | All members | Not Started | Representative profile/job set | No human judgments have been supplied or fabricated. |
+
+Validation: 523 backend tests passed, four opt-in tests skipped; four browser
+tests passed; production frontend build passed; four selected PostgreSQL
+integration/concurrency tests passed; search/research suite passed 36 tests.
+See docs/integration/LOCAL_COMPLETION.md and research/evaluation/COMPLETION.md.
